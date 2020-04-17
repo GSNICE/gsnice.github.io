@@ -5,19 +5,45 @@
     <description>嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 17 Apr 2020 20:08:05 +0800</pubDate>
-    <lastBuildDate>Fri, 17 Apr 2020 20:08:05 +0800</lastBuildDate>
+    <pubDate>Fri, 17 Apr 2020 23:50:50 +0800</pubDate>
+    <lastBuildDate>Fri, 17 Apr 2020 23:50:50 +0800</lastBuildDate>
     <generator>Jekyll v3.8.3</generator>
     
       <item>
-        <title>2020 测试</title>
-        <description>&lt;h1 id=&quot;这是一篇测试的文章&quot;&gt;这是一篇测试的文章&lt;/h1&gt;
+        <title>iOS 开篇</title>
+        <description>&lt;h1 id=&quot;这是-ios-技术的开篇&quot;&gt;这是 iOS 技术的开篇！&lt;/h1&gt;
 </description>
-        <pubDate>Tue, 31 Dec 2019 23:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/12/Test/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/12/Test/</guid>
+        <pubDate>Wed, 01 Jan 2020 05:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/01/iOS/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/01/iOS/</guid>
         
-        <category>测试</category>
+        <category>iOS</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Vue 开篇</title>
+        <description>&lt;h1 id=&quot;这是-vue-技术的开篇&quot;&gt;这是 Vue 技术的开篇！&lt;/h1&gt;
+</description>
+        <pubDate>Wed, 01 Jan 2020 05:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/01/Vue/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/01/Vue/</guid>
+        
+        <category>Vue</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Flutter 开篇</title>
+        <description>&lt;h1 id=&quot;这是-flutter-技术的开篇&quot;&gt;这是 Flutter 技术的开篇！&lt;/h1&gt;
+</description>
+        <pubDate>Wed, 01 Jan 2020 05:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2020/01/Flutter/</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/01/Flutter/</guid>
+        
+        <category>Flutter</category>
         
         
       </item>
