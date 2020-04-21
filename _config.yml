@@ -21,6 +21,7 @@ blog_button:
 
 nav:
     - {title: CSDN, description: 我的 CSDN 博客, url: '//blog.csdn.net/u012439446'}
+    - {title: 简历, description: 简历, url: '/resume'}
     - {title: 关于, description: 关于, url: '/about'}
 
 # Pagination
