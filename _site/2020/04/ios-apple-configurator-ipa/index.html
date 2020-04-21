@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>iOS：使用 Apple Configurator 获取 ipa 包及资源文件</title>
+  <meta name="description" content="软件下载">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="iOS：使用 Apple Configurator 获取 ipa 包及资源文件">
+  <meta name="twitter:description" content="软件下载">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="iOS：使用 Apple Configurator 获取 ipa 包及资源文件">
+  <meta property="og:description" content="软件下载">
+  
+  <link rel="icon" type="image/ico" href="/assets/images/favicon.ico" />
+  <link href="/assets/images/favicon.ico" rel="shortcut icon" type="image/ico">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2020/04/ios-apple-configurator-ipa/">
+  <link rel="alternate" type="application/rss+xml" title="GSNICE" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 GSNICE 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="GSNICE logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for GSNICE" class="blog-button">GSNICE</a></h1>
+
+        
+        <span class="panel-cover__subtitle panel-subtitle">上善若水，人淡如菊</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">欢迎访问我的技术空间</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+                  <li class="navigation__item"><a href="//blog.csdn.net/u012439446" target="_blank" title="我的 CSDN 博客">CSDN</a></li>
+                
+                  <li class="navigation__item"><a href="/about" target="_blank" title="关于">关于</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/dgnice" title="@dgnice 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/GSNICE" title="@GSNICE 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:sdjngcb@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-04-21 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2020-04-21</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+    </div>
+    <h1 class="post-title">iOS：使用 Apple Configurator 获取 ipa 包及资源文件</h1>
+  </header>
+
+  <section class="post">
+    <h3 id="软件下载">软件下载</h3>
+
+<p>在 App Store 搜索下载【Apple Configurator】的 App。</p>
+
+<h3 id="登录-apple-id">登录 Apple ID</h3>
+
+<p>把 iPhone 连接上 Mac，点击顶部菜单栏中的 <code class="highlighter-rouge">账户</code></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220145489.png" alt="在这里插入图片描述" /></p>
+
+<p>选择 <code class="highlighter-rouge">登录</code> （用连接设备的 Apple ID 进行登录）。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220202860.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>注意：需要下载的 App 需要在登录过的 Apple ID 下购买安装过才可以。</p>
+
+<p>注意：备份iPhone的内容（避免数据丢失，非必选）</p>
+
+<h3 id="查找需要下载的-app">查找需要下载的 App</h3>
+
+<p>查看已登录的 Apple ID 下购买的 App 历史记录。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220220431.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220233769.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220244878.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>如你手机中已经安装了当前要下载的 App，所以会提示：该应用已经存在，是否需要替换？</p>
+
+<p>此时，不要点任何按钮！不要点任何按钮！不要点任何按钮！</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220257822.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>不要操作 Apple Configurator，让它保持上图的状态。</p>
+
+<h3 id="查看下载下来的-ipa-文件">查看下载下来的 ipa 文件</h3>
+
+<p>打开 Finder 前往文件夹，或者直接快捷键</p>
+
+<p><code class="highlighter-rouge">command + shift + G</code></p>
+
+<p>并输入下面路径</p>
+
+<div class="language-zsh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>~/Library/Group Containers/K36BKF7T3D.group.com.apple.configurator/Library/Caches/Assets/TemporaryItems/MobileApps/
+</code></pre></div></div>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220316268.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p><img src="https://img-blog.csdnimg.cn/2020042122032573.png" alt="在这里插入图片描述" /></p>
+
+<p>点击前往，打开 ipa 包所在文件。将 ipa 文件 copy 出来。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220335685.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>这时候别忘了点击 Apple Configurator 窗口中的停止，你会发现刚才目录下的文件也消失了。</p>
+
+<h3 id="解包查看-ipa-包内的资源文件">解包查看 ipa 包内的资源文件</h3>
+
+<p>拿到 ipa 文件后，你可以将后缀 .ipa 改为 .zip，然后解压。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200421220628129.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述" /></p>
+
+<p>就可以看到 Payload 下的包，显示包内容可以看到部分 APP 的资源以及 Assets.car。</p>
+
+<p>如果你要解压 Assets.car， 可以使用 github 上的工具：
+<a href="https://github.com/pcjbird/AssetsExtractor">https://github.com/pcjbird/AssetsExtractor</a></p>
+
+<p>最后，提取出来的资源文件，请注意版权。本教程只为技术分享之用，非商业用途。</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/04/Jekyll/" title="link to Jekyll 自动生成文章">Jekyll 自动生成文章</a></h2>
+       <p class="excerpt">当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 Rake 来解决这个问题。RakeRake，即 Ruby Make，使用 ruby 开发代码构建工具。  安装 Rake gem install rake，可以先查看 gem list rake  是否已经安装 Rake？  编写 Rakefile，放入 Jekyll 的根目录下。将编写好的文件命...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-04-21 00:00:00 +0800" class="post-list__meta--date date">2020-04-21</time> &#8226; <span class="post-list__meta--tags tags">Jekyll</span><a class="btn-border-small" href=/2020/04/Jekyll/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/01/iOS/" title="link to iOS 开篇">iOS 开篇</a></h2>
+       <p class="excerpt">这是 iOS 技术的开篇！&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-01-01 05:00:00 +0800" class="post-list__meta--date date">2020-01-01</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2020/01/iOS/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2020-04-21 生成</span>
+        <span class="footer__copyright">本站由 <a href="http://gsnice.com">@GSNICE</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2020</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
