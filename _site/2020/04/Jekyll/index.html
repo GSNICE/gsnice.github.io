@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Jekyll 自动生成文章</title>
+  <meta name="description" content="当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 Rake 来解决这个问题。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Jekyll 自动生成文章">
+  <meta name="twitter:description" content="当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 Rake 来解决这个问题。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Jekyll 自动生成文章">
+  <meta property="og:description" content="当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 Rake 来解决这个问题。">
+  
+  <link rel="icon" type="image/ico" href="/assets/images/favicon.ico" />
+  <link href="/assets/images/favicon.ico" rel="shortcut icon" type="image/ico">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="https://gsnice.com/2020/04/Jekyll/">
+  <link rel="alternate" type="application/rss+xml" title="GSNICE" href="https://gsnice.com/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 GSNICE 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="GSNICE logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for GSNICE" class="blog-button">GSNICE</a></h1>
+
+        
+        <span class="panel-cover__subtitle panel-subtitle">上善若水，人淡如菊</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">欢迎访问我的技术空间</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+                  <li class="navigation__item"><a href="//blog.csdn.net/u012439446" target="_blank" title="我的 CSDN 博客">CSDN</a></li>
+                
+                  <li class="navigation__item"><a href="/about" target="_blank" title="关于">关于</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/dgnice" title="@dgnice 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/GSNICE" title="@GSNICE 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:sdjngcb@gmail.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-04-21 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2020-04-21</time> &#8226; <span class="post-meta__tags tags">Jekyll</span>
+    </div>
+    <h1 class="post-title">Jekyll 自动生成文章</h1>
+  </header>
+
+  <section class="post">
+    <p>当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 <strong>Rake</strong> 来解决这个问题。</p>
+
+<h2 id="rake">Rake</h2>
+
+<p>Rake，即 Ruby Make，使用 ruby 开发代码构建工具。</p>
+
+<ol>
+  <li>安装 Rake <code class="highlighter-rouge">gem install rake</code>，可以先查看 <code class="highlighter-rouge">gem list rake</code>  是否已经安装 Rake？</li>
+  <li>编写 Rakefile，放入 Jekyll 的根目录下。</li>
+</ol>
+
+<p><img src="/Users/Gavin/Library/Application%20Support/marktext/images/2020-04-21-22-29-04-image.png" alt="" /></p>
+
+<p>将编写好的文件命名为以上格式都是可以的。</p>
+
+<h4 id="代码如下">代码如下：</h4>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'rake'</span>
+<span class="nb">require</span> <span class="s1">'yaml'</span>
+
+<span class="no">SOURCE</span> <span class="o">=</span> <span class="s2">"."</span>
+<span class="no">CONFIG</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s1">'posts'</span> <span class="o">=&gt;</span> <span class="no">File</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="no">SOURCE</span><span class="p">,</span> <span class="s2">"_posts"</span><span class="p">),</span>
+  <span class="s1">'post_ext'</span> <span class="o">=&gt;</span> <span class="s2">"md"</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Usage: rake post title="A Title"</span>
+<span class="n">desc</span> <span class="s2">"Begin a new post in </span><span class="si">#{</span><span class="no">CONFIG</span><span class="p">[</span><span class="s1">'posts'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+<span class="n">task</span> <span class="ss">:post</span> <span class="k">do</span>
+  <span class="nb">abort</span><span class="p">(</span><span class="s2">"rake aborted: '</span><span class="si">#{</span><span class="no">CONFIG</span><span class="p">[</span><span class="s1">'posts'</span><span class="p">]</span><span class="si">}</span><span class="s2">' directory not found."</span><span class="p">)</span> <span class="k">unless</span> <span class="no">FileTest</span><span class="p">.</span><span class="nf">directory?</span><span class="p">(</span><span class="no">CONFIG</span><span class="p">[</span><span class="s1">'posts'</span><span class="p">])</span>
+  <span class="n">title</span> <span class="o">=</span> <span class="no">ENV</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">||</span> <span class="s2">"new-post"</span>
+  <span class="n">slug</span> <span class="o">=</span> <span class="n">title</span><span class="p">.</span><span class="nf">downcase</span><span class="p">.</span><span class="nf">strip</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">).</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/[^\w-]/</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span>
+  <span class="n">filename</span> <span class="o">=</span> <span class="no">File</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="no">CONFIG</span><span class="p">[</span><span class="s1">'posts'</span><span class="p">],</span> <span class="s2">"</span><span class="si">#{</span><span class="no">Time</span><span class="p">.</span><span class="nf">now</span><span class="p">.</span><span class="nf">strftime</span><span class="p">(</span><span class="s1">'%Y-%m-%d'</span><span class="p">)</span><span class="si">}</span><span class="s2">-</span><span class="si">#{</span><span class="n">slug</span><span class="si">}</span><span class="s2">.</span><span class="si">#{</span><span class="no">CONFIG</span><span class="p">[</span><span class="s1">'post_ext'</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+  <span class="k">if</span> <span class="no">File</span><span class="p">.</span><span class="nf">exist?</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="nb">abort</span><span class="p">(</span><span class="s2">"rake aborted!"</span><span class="p">)</span> <span class="k">if</span> <span class="n">ask</span><span class="p">(</span><span class="s2">"</span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. Do you want to overwrite?"</span><span class="p">,</span> <span class="p">[</span><span class="s1">'y'</span><span class="p">,</span> <span class="s1">'n'</span><span class="p">])</span> <span class="o">==</span> <span class="s1">'n'</span>
+  <span class="k">end</span>
+
+  <span class="nb">puts</span> <span class="s2">"Creating new post: </span><span class="si">#{</span><span class="n">filename</span><span class="si">}</span><span class="s2">"</span>
+  <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">post</span><span class="o">|</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"---"</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"layout: post"</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"title: </span><span class="se">\"</span><span class="si">#{</span><span class="n">title</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/-/</span><span class="p">,</span><span class="s1">' '</span><span class="p">)</span><span class="si">}</span><span class="se">\"</span><span class="s2">"</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"category: "</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"tags: []"</span>
+    <span class="n">post</span><span class="p">.</span><span class="nf">puts</span> <span class="s2">"---"</span>
+  <span class="k">end</span>
+<span class="k">end</span> <span class="c1"># task :post</span>
+</code></pre></div></div>
+
+<p>这是一个简洁的版本，也可以自行添加 <strong>description，categories，tag</strong> 等。</p>
+
+<p>命令行输入  <code class="highlighter-rouge">rake post title="article name"。</code>  马上会在 _post 目录下创建 <strong>年-月-日-.md</strong> 文章。（例：2020-4-21-.md）</p>
+
+<p><img src="https://img-blog.csdn.net/20160711113033103" alt="这里写图片描述" /></p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/01/iOS/" title="link to iOS 开篇">iOS 开篇</a></h2>
+       <p class="excerpt">这是 iOS 技术的开篇！&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-01-01 05:00:00 +0800" class="post-list__meta--date date">2020-01-01</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2020/01/iOS/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2020-04-21 生成</span>
+        <span class="footer__copyright">本站由 <a href="http://gsnice.com">@GSNICE</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2020</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
