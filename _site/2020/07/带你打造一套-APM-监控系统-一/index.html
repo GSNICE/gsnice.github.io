@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>带你打造一套 APM 监控系统（一）</title>
+  <meta name="description" content="  APM 是 Application Performance Monitoring 的缩写，监视和管理软件应用程序的性能和可用性。应用性能管理对一个应用的持续稳定运行至关重要。所以这篇文章就从一个 iOS App 的性能管理的纬度谈谈如何精确监控以及数据如何上报等技术点">
+  <meta name="author" content="Gavin Guo">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="带你打造一套 APM 监控系统（一）">
+  <meta name="twitter:description" content="  APM 是 Application Performance Monitoring 的缩写，监视和管理软件应用程序的性能和可用性。应用性能管理对一个应用的持续稳定运行至关重要。所以这篇文章就从一个 iOS App 的性能管理的纬度谈谈如何精确监控以及数据如何上报等技术点">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="带你打造一套 APM 监控系统（一）">
+  <meta property="og:description" content="  APM 是 Application Performance Monitoring 的缩写，监视和管理软件应用程序的性能和可用性。应用性能管理对一个应用的持续稳定运行至关重要。所以这篇文章就从一个 iOS App 的性能管理的纬度谈谈如何精确监控以及数据如何上报等技术点">
+  
+  <link rel="icon" type="image/ico" href="/assets/images/favicon.ico" />
+  <link href="/assets/images/favicon.ico" rel="shortcut icon" type="image/ico">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E4%B8%80/">
+  <link rel="alternate" type="application/rss+xml" title="GSNICE" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 GSNICE 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="GSNICE logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for GSNICE" class="blog-button">GSNICE</a></h1>
+
+        
+        <span class="panel-cover__subtitle panel-subtitle">上善若水，人淡如菊</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">欢迎访问我的技术空间</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+                  <li class="navigation__item"><a href="//blog.csdn.net/u012439446" target="_blank" title="我的 CSDN 博客">CSDN</a></li>
+                
+                  <li class="navigation__item"><a href="/resume" target="_blank" title="简历">简历</a></li>
+                
+                  <li class="navigation__item"><a href="/about" target="_blank" title="关于">关于</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/dgnice" title="@dgnice 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/GSNICE" title="@GSNICE 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:sdjngcb@gmail.com" title="邮箱：sdjngcb@gmail.com">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-07-14 12:56:30 +0800" itemprop="datePublished" class="post-meta__date date">2020-07-14</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+    </div>
+    <h1 class="post-title">带你打造一套 APM 监控系统（一）</h1>
+  </header>
+
+  <section class="post">
+    <blockquote>
+  <p>APM 是 Application Performance Monitoring 的缩写，监视和管理软件应用程序的性能和可用性。应用性能管理对一个应用的持续稳定运行至关重要。所以这篇文章就从一个 iOS App 的性能管理的纬度谈谈如何精确监控以及数据如何上报等技术点</p>
+</blockquote>
+
+<p>App 的性能问题是影响用户体验的重要因素之一。性能问题主要包含：Crash、网络请求错误或者超时、UI 响应速度慢、主线程卡顿、CPU 和内存使用率高、耗电量大等等。大多数的问题原因在于开发者错误地使用了线程锁、系统函数、编程规范问题、数据结构等等。解决问题的关键在于尽早的发现和定位问题。</p>
+
+<p>本篇文章着重总结了 APM 的原因以及如何收集数据。APM 数据收集后结合数据上报机制，按照一定策略上传数据到服务端。服务端消费这些信息并产出报告。请结合<a href="https://github.com/FantasticLBP/knowledge-kit/blob/master/Chapter1%20-%20iOS/1.80.md">姊妹篇</a>， 总结了如何打造一款灵活可配置、功能强大的数据上报组件。</p>
+
+<h2 id="一卡顿监控">一、卡顿监控</h2>
+
+<p>卡顿问题，就是在主线程上无法响应用户交互的问题。影响着用户的直接体验，所以针对 App 的卡顿监控是 APM 里面重要的一环。</p>
+
+<p>FPS（frame per second）每秒钟的帧刷新次数，iPhone 手机以 60 为最佳，iPad 某些型号是 120，也是作为卡顿监控的一项参考参数，为什么说是参考参数？因为它不准确。先说说怎么获取到 FPS。CADisplayLink 是一个系统定时器，会以帧刷新频率一样的速率来刷新视图。 <code class="highlighter-rouge">[CADisplayLink displayLinkWithTarget:self selector:@selector(###:)]</code>。至于为什么不准我们来看看下面的示例代码</p>
+
+<pre><code class="language-objectivec">_displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(p_displayLinkTick:)];
+[_displayLink setPaused:YES];
+[_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+</code></pre>
+
+<p>代码所示，CADisplayLink 对象是被添加到指定的 RunLoop 的某个 Mode 下。所以还是 CPU 层面的操作，卡顿的体验是整个图像渲染的结果：CPU + GPU。请继续往下看</p>
+
+<h3 id="1-屏幕绘制原理">1. 屏幕绘制原理</h3>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093204660.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>讲讲老式的 CRT 显示器的原理。 CRT 电子枪按照上面方式，从上到下一行行扫描，扫面完成后显示器就呈现一帧画面，随后电子枪回到初始位置继续下一次扫描。为了把显示器的显示过程和系统的视频控制器进行同步，显示器（或者其他硬件）会用硬件时钟产生一系列的定时信号。当电子枪换到新的一行，准备进行扫描时，显示器会发出一个水平同步信号（horizonal synchronization），简称 HSync；当一帧画面绘制完成后，电子枪恢复到原位，准备画下一帧前，显示器会发出一个垂直同步信号（Vertical synchronization），简称 VSync。显示器通常以固定的频率进行刷新，这个固定的刷新频率就是 VSync 信号产生的频率。虽然现在的显示器基本都是液晶显示屏，但是原理保持不变。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093241623.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>通常，屏幕上一张画面的显示是由 CPU、GPU 和显示器是按照上图的方式协同工作的。CPU 根据工程师写的代码计算好需要现实的内容（比如视图创建、布局计算、图片解码、文本绘制等），然后把计算结果提交到 GPU，GPU 负责图层合成、纹理渲染，随后 GPU 将渲染结果提交到帧缓冲区。随后视频控制器会按照 VSync 信号逐行读取帧缓冲区的数据，经过数模转换传递给显示器显示。</p>
+
+<p>在帧缓冲区只有一个的情况下，帧缓冲区的读取和刷新都存在效率问题，为了解决效率问题，显示系统会引入2个缓冲区，即双缓冲机制。在这种情况下，GPU 会预先渲染好一帧放入帧缓冲区，让视频控制器来读取，当下一帧渲染好后，GPU 直接把视频控制器的指针指向第二个缓冲区。提升了效率。</p>
+
+<p>目前来看，双缓冲区提高了效率，但是带来了新的问题：当视频控制器还未读取完成时，即屏幕内容显示了部分，GPU 将新渲染好的一帧提交到另一个帧缓冲区并把视频控制器的指针指向新的帧缓冲区，视频控制器就会把新的一帧数据的下半段显示到屏幕上，造成画面撕裂的情况。</p>
+
+<p>为了解决这个问题，GPU 通常有一个机制叫垂直同步信号（V-Sync），当开启垂直同步信号后，GPU 会等到视频控制器发送 V-Sync 信号后，才进行新的一帧的渲染和帧缓冲区的更新。这样的几个机制解决了画面撕裂的情况，也增加了画面流畅度。但需要更多的计算资源</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093312966.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p><strong>答疑</strong></p>
+
+<p>可能有些人会看到「当开启垂直同步信号后，GPU 会等到视频控制器发送 V-Sync 信号后，才进行新的一帧的渲染和帧缓冲区的更新」这里会想，GPU 收到 V-Sync 才进行新的一帧渲染和帧缓冲区的更新，那是不是双缓冲区就失去意义了？</p>
+
+<p>设想一个显示器显示第一帧图像和第二帧图像的过程。首先在双缓冲区的情况下，GPU 首先渲染好一帧图像存入到帧缓冲区，然后让视频控制器的指针直接直接这个缓冲区，显示第一帧图像。第一帧图像的内容显示完成后，视频控制器发送 V-Sync 信号，GPU 收到 V-Sync 信号后渲染第二帧图像并将视频控制器的指针指向第二个帧缓冲区。</p>
+
+<p><strong>看上去第二帧图像是在等第一帧显示后的视频控制器发送 V-Sync 信号。是吗？真是这样的吗？ 😭 想啥呢，当然不是。 🐷 不然双缓冲区就没有存在的意义了</strong></p>
+
+<p><strong>揭秘。请看下图:</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093343100.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>当第一次 V-Sync 信号到来时，先渲染好一帧图像放到帧缓冲区，但是不展示，当收到第二个 V-Sync 信号后读取第一次渲染好的结果（视频控制器的指针指向第一个帧缓冲区），并同时渲染新的一帧图像并将结果存入第二个帧缓冲区，等收到第三个 V-Sync 信号后，读取第二个帧缓冲区的内容（视频控制器的指针指向第二个帧缓冲区），并开始第三帧图像的渲染并送入第一个帧缓冲区，依次不断循环往复。</p>
+
+<p>请查看资料，需要梯子：<a href="https://en.m.wikipedia.org/wiki/Multiple_buffering">Multiple buffering</a></p>
+
+<h3 id="2-卡顿产生的原因">2. 卡顿产生的原因</h3>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093415669.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>VSync 信号到来后，系统图形服务会通过 CADisplayLink 等机制通知 App，App 主线程开始在 CPU 中计算显示内容（视图创建、布局计算、图片解码、文本绘制等）。然后将计算的内容提交到 GPU，GPU 经过图层的变换、合成、渲染，随后 GPU 把渲染结果提交到帧缓冲区，等待下一次 VSync 信号到来再显示之前渲染好的结果。在垂直同步机制的情况下，如果在一个 VSync 时间周期内，CPU 或者 GPU 没有完成内容的提交，就会造成该帧的丢弃，等待下一次机会再显示，这时候屏幕上还是之前渲染的图像，所以这就是 CPU、GPU 层面界面卡顿的原因。</p>
+
+<p>目前 iOS 设备有双缓存机制，也有三缓冲机制，Android 现在主流是三缓冲机制，在早期是单缓冲机制。
+<a href="https://ios.developreference.com/article/12261072/Metal+newBufferWithBytes+usage">iOS 三缓冲机制例子</a></p>
+
+<p>CPU 和 GPU 资源消耗原因很多，比如对象的频繁创建、属性调整、文件读取、视图层级的调整、布局的计算（AutoLayout 视图个数多了就是线性方程求解难度变大）、图片解码（大图的读取优化）、图像绘制、文本渲染、数据库读取（多读还是多写乐观锁、悲观锁的场景）、锁的使用（举例：自旋锁使用不当会浪费 CPU）等方面。开发者根据自身经验寻找最优解（这里不是本文重点）。</p>
+
+<h3 id="3-apm-如何监控卡顿并上报">3. APM 如何监控卡顿并上报</h3>
+
+<p>CADisplayLink 肯定不用了，这个 FPS 仅作为参考。一般来讲，卡顿的监测有2种方案：<strong>监听 RunLoop 状态回调、子线程 ping 主线程</strong></p>
+
+<h4 id="31-runloop-状态监听的方式">3.1 RunLoop 状态监听的方式</h4>
+
+<p>RunLoop 负责监听输入源进行调度处理。比如网络、输入设备、周期性或者延迟事件、异步回调等。RunLoop 会接收2种类型的输入源：一种是来自另一个线程或者来自不同应用的异步消息（source0事件）、另一种是来自预定或者重复间隔的事件。</p>
+
+<p><strong>RunLoop 状态如下图：</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093512114.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="RunLoop" /></p>
+
+<p><strong>第一步：通知 Observers，RunLoop 要开始进入 loop，紧接着进入 loop。</strong></p>
+
+<pre><code class="language-objectivec">if (currentMode-&gt;_observerMask &amp; kCFRunLoopEntry )
+    // 通知 Observers: RunLoop 即将进入 loop
+    __CFRunLoopDoObservers(rl, currentMode, kCFRunLoopEntry);
+// 进入loop
+result = __CFRunLoopRun(rl, currentMode, seconds, returnAfterSourceHandled, previousMode);
+</code></pre>
+
+<p><strong>第二步：开启 do while 循环保活线程，通知 Observers，RunLoop 触发 Timer 回调、Source0 回调，接着执行被加入的 block。</strong></p>
+
+<pre><code class="language-objectivec"> if (rlm-&gt;_observerMask &amp; kCFRunLoopBeforeTimers)
+    //  通知 Observers: RunLoop 即将触发 Timer 回调
+    __CFRunLoopDoObservers(rl, rlm, kCFRunLoopBeforeTimers);
+if (rlm-&gt;_observerMask &amp; kCFRunLoopBeforeSources)
+    //  通知 Observers: RunLoop 即将触发 Source 回调
+    __CFRunLoopDoObservers(rl, rlm, kCFRunLoopBeforeSources);
+// 执行被加入的block
+__CFRunLoopDoBlocks(rl, rlm);
+</code></pre>
+
+<p><strong>第三步：RunLoop 在触发 Source0 回调后，如果 Source1 是 ready 状态，就会跳转到 handle_msg 去处理消息。</strong></p>
+
+<pre><code class="language-objectivec">//  如果有 Source1 (基于port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息
+if (MACH_PORT_NULL != dispatchPort &amp;&amp; !didDispatchPortLastTime) {
+#if DEPLOYMENT_TARGET_MACOSX || DEPLOYMENT_TARGET_EMBEDDED || DEPLOYMENT_TARGET_EMBEDDED_MINI
+    msg = (mach_msg_header_t *)msg_buffer;
+    
+    if (__CFRunLoopServiceMachPort(dispatchPort, &amp;msg, sizeof(msg_buffer), &amp;livePort, 0, &amp;voucherState, NULL)) {
+        goto handle_msg;
+    }
+#elif DEPLOYMENT_TARGET_WINDOWS
+    if (__CFRunLoopWaitForMultipleObjects(NULL, &amp;dispatchPort, 0, 0, &amp;livePort, NULL)) {
+        goto handle_msg;
+    }
+#endif
+}
+</code></pre>
+
+<p><strong>第四步：回调触发后，通知 Observers 即将进入休眠状态。</strong></p>
+
+<pre><code class="language-objectivec">Boolean poll = sourceHandledThisLoop || (0ULL == timeout_context-&gt;termTSR);
+// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)
+if (!poll &amp;&amp; (rlm-&gt;_observerMask &amp; kCFRunLoopBeforeWaiting)) __CFRunLoopDoObservers(rl, rlm, kCFRunLoopBeforeWaiting);
+	__CFRunLoopSetSleeping(rl);
+</code></pre>
+
+<p><strong>第五步：进入休眠后，会等待 mach_port 消息，以便再次唤醒。只有以下4种情况才可以被再次唤醒。</strong></p>
+
+<ul>
+  <li>基于 port 的 source 事件</li>
+  <li>Timer 时间到</li>
+  <li>RunLoop 超时</li>
+  <li>被调用者唤醒</li>
+</ul>
+
+<pre><code class="language-objectivec">do {
+    if (kCFUseCollectableAllocator) {
+        // objc_clear_stack(0);
+        // &lt;rdar://problem/16393959&gt;
+        memset(msg_buffer, 0, sizeof(msg_buffer));
+    }
+    msg = (mach_msg_header_t *)msg_buffer;
+    
+    __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort, poll ? 0 : TIMEOUT_INFINITY, &amp;voucherState, &amp;voucherCopy);
+    
+    if (modeQueuePort != MACH_PORT_NULL &amp;&amp; livePort == modeQueuePort) {
+        // Drain the internal queue. If one of the callout blocks sets the timerFired flag, break out and service the timer.
+        while (_dispatch_runloop_root_queue_perform_4CF(rlm-&gt;_queue));
+        if (rlm-&gt;_timerFired) {
+            // Leave livePort as the queue port, and service timers below
+            rlm-&gt;_timerFired = false;
+            break;
+        } else {
+            if (msg &amp;&amp; msg != (mach_msg_header_t *)msg_buffer) free(msg);
+        }
+    } else {
+        // Go ahead and leave the inner loop.
+        break;
+    }
+} while (1);
+</code></pre>
+
+<p><strong>第六步：唤醒时通知 Observer，RunLoop 的线程刚刚被唤醒了。</strong></p>
+
+<pre><code class="language-objectivec">// 通知 Observers: RunLoop 的线程刚刚被唤醒了
+if (!poll &amp;&amp; (rlm-&gt;_observerMask &amp; kCFRunLoopAfterWaiting)) __CFRunLoopDoObservers(rl, rlm, kCFRunLoopAfterWaiting);
+    // 处理消息
+    handle_msg:;
+    __CFRunLoopSetIgnoreWakeUps(rl);
+</code></pre>
+
+<p><strong>第七步：RunLoop 唤醒后，处理唤醒时收到的消息：</strong></p>
+
+<ul>
+  <li>如果是 Timer 时间到，则触发 Timer 的回调</li>
+  <li>如果是 dispatch，则执行 block</li>
+  <li>如果是 source1 事件，则处理这个事件</li>
+</ul>
+
+<pre><code class="language-objectivec">#if USE_MK_TIMER_TOO
+        // 如果一个 Timer 到时间了，触发这个Timer的回调
+        else if (rlm-&gt;_timerPort != MACH_PORT_NULL &amp;&amp; livePort == rlm-&gt;_timerPort) {
+            CFRUNLOOP_WAKEUP_FOR_TIMER();
+            // On Windows, we have observed an issue where the timer port is set before the time which we requested it to be set. For example, we set the fire time to be TSR 167646765860, but it is actually observed firing at TSR 167646764145, which is 1715 ticks early. The result is that, when __CFRunLoopDoTimers checks to see if any of the run loop timers should be firing, it appears to be 'too early' for the next timer, and no timers are handled.
+            // In this case, the timer port has been automatically reset (since it was returned from MsgWaitForMultipleObjectsEx), and if we do not re-arm it, then no timers will ever be serviced again unless something adjusts the timer list (e.g. adding or removing timers). The fix for the issue is to reset the timer here if CFRunLoopDoTimers did not handle a timer itself. 9308754
+            if (!__CFRunLoopDoTimers(rl, rlm, mach_absolute_time())) {
+                // Re-arm the next timer
+                __CFArmNextTimerInMode(rlm, rl);
+            }
+        }
+#endif
+        //  如果有dispatch到main_queue的block，执行block
+        else if (livePort == dispatchPort) {
+            CFRUNLOOP_WAKEUP_FOR_DISPATCH();
+            __CFRunLoopModeUnlock(rlm);
+            __CFRunLoopUnlock(rl);
+            _CFSetTSD(__CFTSDKeyIsInGCDMainQ, (void *)6, NULL);
+#if DEPLOYMENT_TARGET_WINDOWS
+            void *msg = 0;
+#endif
+            __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
+            _CFSetTSD(__CFTSDKeyIsInGCDMainQ, (void *)0, NULL);
+            __CFRunLoopLock(rl);
+            __CFRunLoopModeLock(rlm);
+            sourceHandledThisLoop = true;
+            didDispatchPortLastTime = true;
+        }
+        // 如果一个 Source1 (基于port) 发出事件了，处理这个事件
+        else {
+            CFRUNLOOP_WAKEUP_FOR_SOURCE();
+            
+            // If we received a voucher from this mach_msg, then put a copy of the new voucher into TSD. CFMachPortBoost will look in the TSD for the voucher. By using the value in the TSD we tie the CFMachPortBoost to this received mach_msg explicitly without a chance for anything in between the two pieces of code to set the voucher again.
+            voucher_t previousVoucher = _CFSetTSD(__CFTSDKeyMachMessageHasVoucher, (void *)voucherCopy, os_release);
+
+            CFRunLoopSourceRef rls = __CFRunLoopModeFindSourceForMachPort(rl, rlm, livePort);
+            if (rls) {
+#if DEPLOYMENT_TARGET_MACOSX || DEPLOYMENT_TARGET_EMBEDDED || DEPLOYMENT_TARGET_EMBEDDED_MINI
+		mach_msg_header_t *reply = NULL;
+		sourceHandledThisLoop = __CFRunLoopDoSource1(rl, rlm, rls, msg, msg-&gt;msgh_size, &amp;reply) || sourceHandledThisLoop;
+		if (NULL != reply) {
+		    (void)mach_msg(reply, MACH_SEND_MSG, reply-&gt;msgh_size, 0, MACH_PORT_NULL, 0, MACH_PORT_NULL);
+		    CFAllocatorDeallocate(kCFAllocatorSystemDefault, reply);
+		}
+#elif DEPLOYMENT_TARGET_WINDOWS
+                sourceHandledThisLoop = __CFRunLoopDoSource1(rl, rlm, rls) || sourceHandledThisLoop;
+#endif
+</code></pre>
+
+<p><strong>第八步：根据当前 RunLoop 状态判断是否需要进入下一个 loop。当被外部强制停止或者 loop 超时，就不继续下一个 loop，否则进入下一个 loop。</strong></p>
+
+<pre><code class="language-objectivec">if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) {
+    // 进入loop时参数说处理完事件就返回
+    retVal = kCFRunLoopRunHandledSource;
+    } else if (timeout_context-&gt;termTSR &lt; mach_absolute_time()) {
+        // 超出传入参数标记的超时时间了
+        retVal = kCFRunLoopRunTimedOut;
+} else if (__CFRunLoopIsStopped(rl)) {
+        __CFRunLoopUnsetStopped(rl);
+    // 被外部调用者强制停止了
+    retVal = kCFRunLoopRunStopped;
+} else if (rlm-&gt;_stopped) {
+    rlm-&gt;_stopped = false;
+    retVal = kCFRunLoopRunStopped;
+} else if (__CFRunLoopModeIsEmpty(rl, rlm, previousMode)) {
+    // source/timer一个都没有
+    retVal = kCFRunLoopRunFinished;
+}
+</code></pre>
+
+<p>完整且带有注释的 RunLoop 代码见<a href="https://raw.githubusercontent.com/FantasticLBP/knowledge-kit/master/assets/CFRunLoop.c">此处</a>。 Source1 是 RunLoop 用来处理 Mach port 传来的系统事件的，Source0 是用来处理用户事件的。收到 Source1 的系统事件后本质还是调用 Source0 事件的处理函数。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093659705.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p><strong>RunLoop 6个状态</strong></p>
+
+<pre><code class="language-objectivec">
+typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+    kCFRunLoopEntry ,           // 进入 loop
+    kCFRunLoopBeforeTimers ,    // 触发 Timer 回调
+    kCFRunLoopBeforeSources ,   // 触发 Source0 回调
+    kCFRunLoopBeforeWaiting ,   // 等待 mach_port 消息
+    kCFRunLoopAfterWaiting ),   // 接收 mach_port 消息
+    kCFRunLoopExit ,            // 退出 loop
+    kCFRunLoopAllActivities     // loop 所有状态改变
+}
+</code></pre>
+
+<p>RunLoop 在进入睡眠前的方法执行时间过长而导致无法进入睡眠，或者线程唤醒后接收消息时间过长而无法进入下一步，都会阻塞线程。如果是主线程，则表现为卡顿。</p>
+
+<p>一旦发现进入睡眠前的 KCFRunLoopBeforeSources 状态，或者唤醒后 KCFRunLoopAfterWaiting，在设置的时间阈值内没有变化，则可判断为卡顿，此时 dump 堆栈信息，还原案发现场，进而解决卡顿问题。</p>
+
+<p>开启一个子线程，不断进行循环监测是否卡顿了。在 n 次都超过卡顿阈值后则认为卡顿了。卡顿之后进行堆栈 dump 并上报（具有一定的机制，数据处理在下一 part 讲）。</p>
+
+<p><strong>WatchDog 在不同状态下具有不同的值：</strong></p>
+
+<ul>
+  <li>启动（Launch）：20s</li>
+  <li>恢复（Resume）：10s</li>
+  <li>挂起（Suspend）：10s</li>
+  <li>退出（Quit）：6s</li>
+  <li>后台（Background）：3min（在 iOS7 之前可以申请 10min；之后改为 3min；可连续申请，最多到 10min）</li>
+</ul>
+
+<p>卡顿阈值的设置的依据是 WatchDog 的机制。APM 系统里面的阈值需要小于 WatchDog 的值，所以取值范围在 [1, 6]  之间，业界通常选择3秒。</p>
+
+<p>通过 <code class="highlighter-rouge">long dispatch_semaphore_wait(dispatch_semaphore_t dsema, dispatch_time_t timeout)</code>  方法判断是否阻塞主线程，<code class="highlighter-rouge">Returns zero on success, or non-zero if the timeout occurred.</code>  返回非0则代表超时阻塞了主线程。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093727658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>可能很多人纳闷 RunLoop 状态那么多，为什么选择 KCFRunLoopBeforeSources 和 KCFRunLoopAfterWaiting？因为大部分卡顿都是在 KCFRunLoopBeforeSources 和 KCFRunLoopAfterWaiting 之间。比如 Source0 类型的 App 内部事件等</p>
+
+<p><strong>Runloop 检测卡顿流程图如下：</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093746525.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p><strong>关键代码如下：</strong></p>
+
+<pre><code class="language-objectivec">// 设置Runloop observer的运行环境
+CFRunLoopObserverContext context = {0, (__bridge void *)self, NULL, NULL};
+// 创建Runloop observer对象
+_observer = CFRunLoopObserverCreate(kCFAllocatorDefault,
+                                    kCFRunLoopAllActivities,
+                                    YES,
+                                    0,
+                                    &amp;runLoopObserverCallBack,
+                                    &amp;context);
+// 将新建的observer加入到当前thread的runloop
+CFRunLoopAddObserver(CFRunLoopGetMain(), _observer, kCFRunLoopCommonModes);
+// 创建信号
+_semaphore = dispatch_semaphore_create(0);
+
+__weak __typeof(self) weakSelf = self;
+// 在子线程监控时长
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    if (!strongSelf) {
+        return;
+    }
+    while (YES) {
+        if (strongSelf.isCancel) {
+            return;
+        }
+        // N次卡顿超过阈值T记录为一次卡顿
+        long semaphoreWait = dispatch_semaphore_wait(self-&gt;_semaphore, dispatch_time(DISPATCH_TIME_NOW, strongSelf.limitMillisecond * NSEC_PER_MSEC));
+        if (semaphoreWait != 0) {
+            if (self-&gt;_activity == kCFRunLoopBeforeSources || self-&gt;_activity == kCFRunLoopAfterWaiting) {
+                if (++strongSelf.countTime &lt; strongSelf.standstillCount){
+                    continue;
+                }
+                // 堆栈信息 dump 并结合数据上报机制，按照一定策略上传数据到服务器。堆栈 dump 会在下面讲解。数据上报会在 [打造功能强大、灵活可配置的数据上报组件](https://github.com/FantasticLBP/knowledge-kit/blob/master/Chapter1%20-%20iOS/1.80.md) 讲
+            }
+        }
+        strongSelf.countTime = 0;
+    }
+});
+</code></pre>
+
+<h4 id="32-子线程-ping-主线程监听的方式">3.2 子线程 ping 主线程监听的方式</h4>
+
+<p>开启一个子线程，创建一个初始值为0的信号量、一个初始值为 YES 的布尔值类型标志位。将设置标志位为 NO 的任务派发到主线程中去，子线程休眠阈值时间，时间到后判断标志位是否被主线程成功（值为 NO），如果没成功则认为主线程发生了卡顿情况，此时 dump 堆栈信息并结合数据上报机制，按照一定策略上传数据到服务器。数据上报会在 <a href="https://github.com/FantasticLBP/knowledge-kit/blob/master/Chapter1%20-%20iOS/1.80.md">打造功能强大、灵活可配置的数据上报组件</a> 讲</p>
+
+<pre><code class="language-objectivec">while (self.isCancelled == NO) {
+        @autoreleasepool {
+            __block BOOL isMainThreadNoRespond = YES;
+            
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                isMainThreadNoRespond = NO;
+                dispatch_semaphore_signal(semaphore);
+            });
+            
+            [NSThread sleepForTimeInterval:self.threshold];
+            
+            if (isMainThreadNoRespond) {
+                if (self.handlerBlock) {
+                    self.handlerBlock(); // 外部在 block 内部 dump 堆栈（下面会讲），数据上报
+                }
+            }
+            
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        }
+    }
+</code></pre>
+
+<h3 id="4-堆栈-dump">4. 堆栈 dump</h3>
+
+<p>方法堆栈的获取是一个麻烦事。理一下思路。<code class="highlighter-rouge">[NSThread callStackSymbols]</code> 可以获取当前线程的调用栈。但是当监控到卡顿发生，需要拿到主线程的堆栈信息就无能为力了。从任何线程回到主线程这条路走不通。先做个知识回顾。</p>
+
+<p>在计算机科学中，调用堆栈是一种栈类型的数据结构，用于存储有关计算机程序的线程信息。这种栈也叫做执行堆栈、程序堆栈、控制堆栈、运行时堆栈、机器堆栈等。调用堆栈用于跟踪每个活动的子例程在完成执行后应该返回控制的点。</p>
+
+<p><strong>维基百科搜索到 “Call Stack” 的一张图和例子，如下:</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093835408.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>上图表示为一个栈。分为若干个栈帧（Frame），每个栈帧对应一个函数调用。下面蓝色部分表示 <code class="highlighter-rouge">DrawSquare</code> 函数，它在执行的过程中调用了 <code class="highlighter-rouge">DrawLine</code> 函数，用绿色部分表示。</p>
+
+<p>可以看到栈帧由三部分组成：函数参数、返回地址、局部变量。比如在 DrawSquare 内部调用了 DrawLine 函数：第一先把 DrawLine 函数需要的参数入栈；第二把返回地址(控制信息。举例：函数 A 内调用函数 B，调用函数B 的下一行代码的地址就是返回地址)入栈；第三函数内部的局部变量也在该栈中存储。</p>
+
+<p>栈指针 Stack Pointer 表示当前栈的顶部，大多部分操作系统都是栈向下生长，所以栈指针是最小值。帧指针 Frame Pointer 指向的地址中，存储了上一次 Stack Pointer 的值，也就是返回地址。</p>
+
+<p>大多数操作系统中，每个栈帧还保存了上一个栈帧的帧指针。因此知道当前栈帧的 Stack Pointer 和 Frame Pointer 就可以不断回溯，递归获取栈底的帧。</p>
+
+<p>接下来的步骤就是拿到所有线程的 Stack Pointer 和 Frame Pointer。然后不断回溯，还原案发现场。</p>
+
+<h3 id="5-mach-task-知识">5. Mach Task 知识</h3>
+
+<p><strong>Mach task:</strong></p>
+
+<p>App 在运行的时候，会对应一个 Mach Task，而 Task 下可能有多条线程同时执行任务。《OS X and iOS Kernel Programming》 中描述 Mach Task 为：任务（Task）是一种容器对象，虚拟内存空间和其他资源都是通过这个容器对象管理的，这些资源包括设备和其他句柄。简单概括为：Mack task 是一个机器无关的 thread 的执行环境抽象。</p>
+
+<p><strong>作用： task 可以理解为一个进程，包含它的线程列表。</strong></p>
+
+<p>结构体：task_threads，将 target_task 任务下的所有线程保存在 act_list 数组中，数组个数为 act_listCnt</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">kern_return_t</span> <span class="n">task_threads</span>
+<span class="p">(</span>
+  <span class="n">task_t</span> <span class="n">traget_task</span><span class="p">,</span>
+  <span class="n">thread_act_array_t</span> <span class="o">*</span><span class="n">act_list</span><span class="p">,</span>                     <span class="c1">//线程指针列表</span>
+  <span class="n">mach_msg_type_number_t</span> <span class="o">*</span><span class="n">act_listCnt</span>  <span class="c1">//线程个数</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>thread_info:</strong></p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">kern_return_t</span> <span class="n">thread_info</span>
+<span class="p">(</span>
+  <span class="n">thread_act_t</span> <span class="n">target_act</span><span class="p">,</span>
+  <span class="n">thread_flavor_t</span> <span class="n">flavor</span><span class="p">,</span>
+  <span class="n">thread_info_t</span> <span class="n">thread_info_out</span><span class="p">,</span>
+  <span class="n">mach_msg_type_number_t</span> <span class="o">*</span><span class="n">thread_info_outCnt</span>
+<span class="p">);</span>
+</code></pre></div></div>
+
+<p><strong>如何获取线程的堆栈数据：</strong></p>
+
+<p>系统方法 <code class="highlighter-rouge">kern_return_t task_threads(task_inspect_t target_task, thread_act_array_t *act_list, mach_msg_type_number_t *act_listCnt);</code> 可以获取到所有的线程，不过这种方法获取到的线程信息是最底层的 <strong>mach 线程</strong>。</p>
+
+<p>对于每个线程，可以用 <code class="highlighter-rouge">kern_return_t thread_get_state(thread_act_t target_act, thread_state_flavor_t flavor, thread_state_t old_state, mach_msg_type_number_t *old_stateCnt);</code> 方法获取它的所有信息，信息填充在 <code class="highlighter-rouge">_STRUCT_MCONTEXT</code> 类型的参数中，这个方法中有2个参数随着 CPU 架构不同而不同。所以需要定义宏屏蔽不同 CPU 之间的区别。</p>
+
+<p><code class="highlighter-rouge">_STRUCT_MCONTEXT</code> 结构体中，存储了当前线程的 Stack Pointer 和最顶部栈帧的 Frame pointer，进而回溯整个线程调用堆栈。</p>
+
+<p>但是上述方法拿到的是内核线程，我们需要的信息是 NSThread，所以需要将内核线程转换为 NSThread。</p>
+
+<p>pthread 的 p 是 <strong>POSIX</strong> 的缩写，表示「可移植操作系统接口」（Portable Operating System Interface）。设计初衷是每个系统都有自己独特的线程模型，且不同系统对于线程操作的 API 都不一样。所以 POSIX 的目的就是提供抽象的 pthread 以及相关 API。这些 API 在不同的操作系统中有不同的实现，但是完成的功能一致。</p>
+
+<p>Unix 系统提供的 <code class="highlighter-rouge">task_threads</code> 和 <code class="highlighter-rouge">thread_get_state</code> 操作的都是内核系统，每个内核线程由 thread_t 类型的 id 唯一标识。pthread 的唯一标识是 pthread_t 类型。其中内核线程和 pthread 的转换（即 thread_t 和 pthread_t）很容易，因为 pthread 设计初衷就是「抽象内核线程」。</p>
+
+<p><code class="highlighter-rouge">memorystatus_action_neededpthread_create</code> 方法创建线程的回调函数为 <strong>nsthreadLauncher</strong>。</p>
+
+<pre><code class="language-objectivec">static void *nsthreadLauncher(void* thread)  
+{
+    NSThread *t = (NSThread*)thread;
+    [nc postNotificationName: NSThreadDidStartNotification object:t userInfo: nil];
+    [t _setName: [t name]];
+    [t main];
+    [NSThread exit];
+    return NULL;
+}
+</code></pre>
+
+<p>NSThreadDidStartNotification 其实就是字符串 @”_NSThreadDidStartNotification”。</p>
+
+<pre><code class="language-objectivec">&lt;NSThread: 0x...&gt;{number = 1, name = main}  
+</code></pre>
+
+<p>为了 NSThread 和内核线程对应起来，只能通过 name 一一对应。 pthread 的 API <code class="highlighter-rouge">pthread_getname_np</code> 也可获取内核线程名字。np 代表 not POSIX，所以不能跨平台使用。</p>
+
+<p>思路概括为：将 NSThread 的原始名字存储起来，再将名字改为某个随机数（时间戳），然后遍历内核线程 pthread 的名字，名字匹配则 NSThread 和内核线程对应了起来。找到后将线程的名字还原成原本的名字。对于主线程，由于不能使用 <code class="highlighter-rouge">pthread_getname_np</code>，所以在当前代码的 load 方法中获取到 thread_t，然后匹配名字。</p>
+
+<pre><code class="language-objectivec">static mach_port_t main_thread_id;  
++ (void)load {
+    main_thread_id = mach_thread_self();
+}
+</code></pre>
+
+<h2 id="二-app-启动时间监控">二、 App 启动时间监控</h2>
+
+<h3 id="1-app-启动时间的监控">1. App 启动时间的监控</h3>
+
+<p>应用启动时间是影响用户体验的重要因素之一，所以我们需要量化去衡量一个 App 的启动速度到底有多快。启动分为冷启动和热启动。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093912149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>冷启动：App 尚未运行，必须加载并构建整个应用。完成应用的初始化。冷启动存在较大优化空间。冷启动时间从 <code class="highlighter-rouge">application: didFinishLaunchingWithOptions:</code> 方法开始计算，App 一般在这里进行各种 SDK 和 App 的基础初始化工作。</p>
+
+<p>热启动：应用已经在后台运行（常见场景：比如用户使用 App 过程中点击 Home 键，再打开 App），由于某些事件将应用唤醒到前台，App 会在 <code class="highlighter-rouge">applicationWillEnterForeground:</code> 方法接受应用进入前台的事件</p>
+
+<p><strong>思路比较简单。如下:</strong></p>
+
+<ul>
+  <li>在监控类的 <code class="highlighter-rouge">load</code> 方法中先拿到当前的时间值</li>
+  <li>监听 App 启动完成后的通知 <code class="highlighter-rouge">UIApplicationDidFinishLaunchingNotification</code></li>
+  <li>收到通知后拿到当前的时间</li>
+  <li>步骤1和3的时间差就是 App 启动时间。</li>
+</ul>
+
+<p><code class="highlighter-rouge">mach_absolute_time</code> 是一个 CPU/总线依赖函数，返回一个 CPU 时钟周期数。系统休眠时不会增加。是一个纳秒级别的数字。获取前后2个纳秒后需要转换到秒。需要基于系统时间的基准，通过 <code class="highlighter-rouge">mach_timebase_info</code> 获得。</p>
+
+<pre><code class="language-objectivec">mach_timebase_info_data_t g_cmmStartupMonitorTimebaseInfoData = 0;
+mach_timebase_info(&amp;g_cmmStartupMonitorTimebaseInfoData);
+uint64_t timelapse = mach_absolute_time() - g_cmmLoadTime;
+double timeSpan = (timelapse * g_cmmStartupMonitorTimebaseInfoData.numer) / (g_cmmStartupMonitorTimebaseInfoData.denom * 1e9);
+</code></pre>
+
+<h3 id="2-线上监控启动时间就好但是在开发阶段需要对启动时间做优化">2. 线上监控启动时间就好，但是在开发阶段需要对启动时间做优化。</h3>
+
+<p>要优化启动时间，就先得知道在启动阶段到底做了什么事情，针对现状作出方案。</p>
+
+<p>pre-main 阶段定义为 App 开始启动到系统调用 main 函数这个阶段；main 阶段定义为 main 函数入口到主 UI 框架的 viewDidAppear。</p>
+
+<p><strong>App 启动过程：</strong></p>
+
+<ul>
+  <li>解析 Info.plist：加载相关信息例如闪屏；沙盒建立、权限检查；</li>
+  <li>Mach-O 加载：如果是胖二进制文件，寻找合适当前 CPU 架构的部分；加载所有依赖的 Mach-O 文件（递归调用 Mach-O 加载的方法）；定义内部、外部指针引用，例如字符串、函数等；加载分类中的方法；c++ 静态对象加载、调用 Objc 的 <code class="highlighter-rouge">+load()</code> 函数；执行声明为 <em>_attribute</em>((constructor)) 的 c 函数；</li>
+  <li>程序执行：调用 main()；调用 UIApplicationMain()；调用 applicationWillFinishLaunching()；</li>
+</ul>
+
+<p><strong>Pre-Main 阶段</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714093947534.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p><strong>Main 阶段</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714094019737.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h4 id="21-加载-dylib">2.1 加载 Dylib</h4>
+
+<p><strong>每个动态库的加载，dyld 需要：</strong></p>
+
+<ul>
+  <li>分析所依赖的动态库</li>
+  <li>找到动态库的 Mach-O 文件</li>
+  <li>打开文件</li>
+  <li>验证文件</li>
+  <li>在系统核心注册文件签名</li>
+  <li>对动态库的每一个 segment 调用 mmap（）</li>
+</ul>
+
+<p><strong>优化：</strong></p>
+
+<ul>
+  <li>减少非系统库的依赖</li>
+  <li>使用静态库而不是动态库</li>
+  <li>合并非系统动态库为一个动态库</li>
+</ul>
+
+<h4 id="22-rebase--binding">2.2 Rebase &amp;&amp; Binding</h4>
+
+<p><strong>优化：</strong></p>
+
+<ul>
+  <li>减少 Objc 类数量，减少 selector 数量，把未使用的类和函数都可以删掉</li>
+  <li>减少 c++ 虚函数数量</li>
+  <li>转而使用 Swift struct（本质就是减少符号的数量）</li>
+</ul>
+
+<h4 id="23-initializers">2.3 Initializers</h4>
+
+<p><strong>优化：</strong></p>
+
+<ul>
+  <li>使用 <code class="highlighter-rouge">+initialize</code> 代替 <code class="highlighter-rouge">+load</code></li>
+  <li>不要使用过 attribute*((constructor)) 将方法显示标记为初始化器，而是让初始化方法调用时才执行。比如使用 dispatch_one、pthread_once() 或 std::once()。也就是第一次使用时才初始化，推迟了一部分工作耗时也尽量不要使用 c++ 的静态对象</li>
+</ul>
+
+<h4 id="24-pre-main-阶段影响因素">2.4 pre-main 阶段影响因素</h4>
+
+<ul>
+  <li>动态库加载越多，启动越慢。</li>
+  <li>ObjC 类越多，函数越多，启动越慢。</li>
+  <li>可执行文件越大启动越慢。</li>
+  <li>C 的 constructor 函数越多，启动越慢。</li>
+  <li>C++ 静态对象越多，启动越慢。</li>
+  <li>ObjC 的 +load 越多，启动越慢。</li>
+</ul>
+
+<p><strong>优化手段：</strong></p>
+
+<ul>
+  <li>减少依赖不必要的库，不管是动态库还是静态库；如果可以的话，把动态库改造成静态库；如果必须依赖动态库，则把多个非系统的动态库合并成一个动态库</li>
+  <li>检查下 framework应当设为optional和required，如果该framework在当前App支持的所有iOS系统版本都存在，那么就设为required，否则就设为optional，因为optional会有些额外的检查</li>
+  <li>合并或者删减一些OC类和函数。关于清理项目中没用到的类，使用工具AppCode代码检查功能，查到当前项目中没有用到的类（也可以用根据linkmap文件来分析，但是准确度不算很高）有一个叫做<a href="https://github.com/dblock/fui">FUI</a>的开源项目能很好的分析出不再使用的类，准确率非常高，唯一的问题是它处理不了动态库和静态库里提供的类，也处理不了C++的类模板</li>
+  <li>删减一些无用的静态变量</li>
+  <li>删减没有被调用到或者已经废弃的方法</li>
+  <li>将不必须在 +load 方法中做的事情延迟到 +initialize中，尽量不要用 C++ 虚函数(创建虚函数表有开销)</li>
+  <li>类和方法名不要太长：iOS每个类和方法名都在 __cstring 段里都存了相应的字符串值，所以类和方法名的长短也是对可执行文件大小是有影响的，还是 Object-c 的动态特性，因为需要通过类/方法名反射找到这个类/方法进行调用，Object-c 对象模型会把类/方法名字符串都保存下来；</li>
+  <li>用 dispatch_once() 代替所有的 attribute((constructor)) 函数、C++ 静态对象初始化、ObjC 的 +load 函数；</li>
+  <li>在设计师可接受的范围内压缩图片的大小，会有意外收获。
+压缩图片为什么能加快启动速度呢？因为启动的时候大大小小的图片加载个十来二十个是很正常的，图片小了，IO操作量就小了，启动当然就会快了，比较靠谱的压缩算法是 TinyPNG。</li>
+</ul>
+
+<h4 id="25-main-阶段优化">2.5 main 阶段优化</h4>
+
+<ul>
+  <li>减少启动初始化的流程。能懒加载就懒加载，能放后台初始化就放后台初始化，能延迟初始化的就延迟初始化，不要卡主线程的启动时间，已经下线的业务代码直接删除</li>
+  <li>优化代码逻辑。去除一些非必要的逻辑和代码，减小每个流程所消耗的时间</li>
+  <li>启动阶段使用多线程来进行初始化，把 CPU 性能发挥最大</li>
+  <li>使用纯代码而不是 xib 或者 storyboard 来描述 UI，尤其是主 UI 框架，比如 TabBarController。因为 xib 和 storyboard 还是需要解析成代码来渲染页面，多了一步。</li>
+</ul>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E4%BA%8C/" title="link to 带你打造一套 APM 监控系统（二）">带你打造一套 APM 监控系统（二）</a></h2>
+       <p class="excerpt">三、 CPU 使用率监控1. CPU 架构CPU（Central Processing Unit）中央处理器，市场上主流的架构有 ARM（arm64）、Intel（x86）、AMD 等。其中 Intel 使用 CISC（Complex Instruction Set Computer），ARM 使用 RISC（Reduced Instruction Set Computer）。区别在于不同的 CPU 设计理念和方法。早期 CPU 全部是 CISC 架构，设计目的是用最少的机器语言指令来完成...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-07-14 12:59:07 +0800" class="post-list__meta--date date">2020-07-14</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E4%BA%8C/>继续阅读</a></div>
+   </div>
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/04/Jekyll/" title="link to Jekyll 自动生成文章">Jekyll 自动生成文章</a></h2>
+       <p class="excerpt">当使用 Jekyll 写文章的时候，大家肯定不想麻烦的创建文本，修改文本后缀名，再加文本头加上 yml 语法开头。所以这时候你肯定想到的是写个脚本简化操作，程序员不就是为偷懒而写代码吗？可以使用 Rake 来解决这个问题。RakeRake，即 Ruby Make，使用 ruby 开发代码构建工具。  安装 Rake gem install rake，可以先查看 gem list rake  是否已经安装 Rake？  编写 Rakefile，放入 Jekyll 的根目录下。将编写好的文件命...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-04-21 00:00:00 +0800" class="post-list__meta--date date">2020-04-21</time> &#8226; <span class="post-list__meta--tags tags">Jekyll</span><a class="btn-border-small" href=/2020/04/Jekyll/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2020-07-14 生成</span>
+        <span class="footer__copyright">本站由 <a href="http://gsnice.com">@GSNICE</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2020</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

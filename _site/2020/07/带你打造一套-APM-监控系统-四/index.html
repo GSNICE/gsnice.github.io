@@ -1,0 +1,3059 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>带你打造一套 APM 监控系统（四）</title>
+  <meta name="description" content="七、 Crash 监控">
+  <meta name="author" content="Gavin Guo">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="带你打造一套 APM 监控系统（四）">
+  <meta name="twitter:description" content="七、 Crash 监控">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="带你打造一套 APM 监控系统（四）">
+  <meta property="og:description" content="七、 Crash 监控">
+  
+  <link rel="icon" type="image/ico" href="/assets/images/favicon.ico" />
+  <link href="/assets/images/favicon.ico" rel="shortcut icon" type="image/ico">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E5%9B%9B/">
+  <link rel="alternate" type="application/rss+xml" title="GSNICE" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 GSNICE 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="GSNICE logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for GSNICE" class="blog-button">GSNICE</a></h1>
+
+        
+        <span class="panel-cover__subtitle panel-subtitle">上善若水，人淡如菊</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">欢迎访问我的技术空间</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="访问博客" class="blog-button">博客</a></li>
+                
+                  <li class="navigation__item"><a href="//blog.csdn.net/u012439446" target="_blank" title="我的 CSDN 博客">CSDN</a></li>
+                
+                  <li class="navigation__item"><a href="/resume" target="_blank" title="简历">简历</a></li>
+                
+                  <li class="navigation__item"><a href="/about" target="_blank" title="关于">关于</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+  <!-- Weibo -->
+  <li class="navigation__item">
+    <a href="http://weibo.com/dgnice" title="@dgnice 的微博" target="_blank">
+      <i class='social fa fa-weibo'></i>
+      <span class="label">Weibo</span>
+    </a>
+  </li>
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/GSNICE" title="@GSNICE 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:sdjngcb@gmail.com" title="邮箱：sdjngcb@gmail.com">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-blue"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2020-07-14 13:02:52 +0800" itemprop="datePublished" class="post-meta__date date">2020-07-14</time> &#8226; <span class="post-meta__tags tags">iOS</span>
+    </div>
+    <h1 class="post-title">带你打造一套 APM 监控系统（四）</h1>
+  </header>
+
+  <section class="post">
+    <h2 id="七-crash-监控">七、 Crash 监控</h2>
+
+<h3 id="1--异常相关知识回顾">1.  异常相关知识回顾</h3>
+
+<h4 id="11-mach-层对异常的处理">1.1 Mach 层对异常的处理</h4>
+
+<p>Mach 在消息传递基础上实现了一套独特的异常处理方法。Mach 异常处理在设计时考虑到：</p>
+
+<ul>
+  <li>带有一致的语义的单一异常处理设施：Mach 只提供一个异常处理机制用于处理所有类型的异常（包括用户定义的异常、平台无关的异常以及平台特定的异常）。根据异常类型进行分组，具体的平台可以定义具体的子类型。</li>
+  <li>清晰和简洁：异常处理的接口依赖于 Mach 已有的具有良好定义的消息和端口架构，因此非常优雅（不会影响效率）。这就允许调试器和外部处理程序的拓展-甚至在理论上还支持拓展基于网络的异常处理。</li>
+</ul>
+
+<p>在 Mach 中，异常是通过内核中的基础设施-消息传递机制处理的。一个异常并不比一条消息复杂多少，异常由出错的线程或者任务（通过 msg_send()） 抛出，然后由一个处理程序通过 msg_recv()）捕捉。处理程序可以处理异常，也可以清楚异常（将异常标记为已完成并继续），还可以决定终止线程。</p>
+
+<p>Mach 的异常处理模型和其他的异常处理模型不同，其他模型的异常处理程序运行在出错的线程上下文中，而 Mach 的异常处理程序在不同的上下文中运行异常处理程序，出错的线程向预先指定好的异常端口发送消息，然后等待应答。每一个任务都可以注册一个异常处理端口，这个异常处理端口会对该任务中的所有线程生效。此外，每个线程都可以通过 ：<code class="highlighter-rouge">thread_set_exception_ports(&lt;#thread_act_t thread#&gt;, &lt;#exception_mask_t exception_mask#&gt;, &lt;#mach_port_t new_port#&gt;, &lt;#exception_behavior_t behavior#&gt;, &lt;#thread_state_flavor_t new_flavor#&gt;)</code> 注册自己的异常处理端口。通常情况下，任务和线程的异常端口都是 NULL，也就是异常不会被处理，而一旦创建异常端口，这些端口就像系统中的其他端口一样，可以转交给其他任务或者其他主机。（有了端口，就可以使用 UDP 协议，通过网络能力让其他的主机上应用程序处理异常）。</p>
+
+<p>发生异常时，首先尝试将异常抛给线程的异常端口，然后尝试抛给任务的异常端口，最后再抛给主机的异常端口（即主机注册的默认端口）。如果没有一个端口返回 <code class="highlighter-rouge">KERN_SUCCESS</code>，那么整个任务将被终止。也就是 Mach 不提供异常处理逻辑，只提供传递异常通知的框架。</p>
+
+<p>异常首先是由处理器陷阱引发的。为了处理陷阱，每一个现代的内核都会安插陷阱处理程序。这些底层函数是由内核的汇编部分安插的。</p>
+
+<h4 id="12-bsd-层对异常的处理">1.2 BSD 层对异常的处理</h4>
+
+<p>BSD 层是用户态主要使用的 XUN 接口，这一层展示了一个符合 POSIX 标准的接口。开发者可以使用 UNIX 系统的一切功能，但不需要了解 Mach 层的细节实现。</p>
+
+<p>Mach 已经通过异常机制提供了底层的陷进处理，而 BSD 则在异常机制之上构建了信号处理机制。硬件产生的信号被 Mach 层捕捉，然后转换为对应的 UNIX 信号，为了维护一个统一的机制，操作系统和用户产生的信号首先被转换为 Mach 异常，然后再转换为信号。</p>
+
+<p>Mach 异常都在 host 层被 <code class="highlighter-rouge">ux_exception</code> 转换为相应的 unix 信号，并通过 <code class="highlighter-rouge">threadsignal</code> 将信号投递到出错的线程。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095047666.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h3 id="2-crash-收集方式">2. Crash 收集方式</h3>
+
+<p>iOS 系统自带的 Apples`s Crash Reporter 在设置中记录 Crash 日志，我们先观察下 Crash 日志</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Incident Identifier: 7FA6736D-09E8-47A1-95EC-76C4522BDE1A
+CrashReporter Key:   4e2d36419259f14413c3229e8b7235bcc74847f3
+Hardware Model:      iPhone7,1
+Process:         CMMonitorExample <span class="o">[</span>3608]
+Path:            /var/containers/Bundle/Application/9518A4F4-59B7-44E9-BDDA-9FBEE8CA18E5/CMMonitorExample.app/CMMonitorExample
+Identifier:      com.Wacai.CMMonitorExample
+Version:         1.0 <span class="o">(</span>1<span class="o">)</span>
+Code Type:       ARM-64
+Parent Process:  ? <span class="o">[</span>1]
+
+Date/Time:       2017-01-03 11:43:03.000 +0800
+OS Version:      iOS 10.2 <span class="o">(</span>14C92<span class="o">)</span>
+Report Version:  104
+
+Exception Type:  EXC_CRASH <span class="o">(</span>SIGABRT<span class="o">)</span>
+Exception Codes: 0x00000000 at 0x0000000000000000
+Crashed Thread:  0
+
+Application Specific Information:
+<span class="k">***</span> Terminating app due to uncaught exception <span class="s1">'NSInvalidArgumentException'</span>, reason: <span class="s1">'-[__NSSingleObjectArrayI objectForKey:]: unrecognized selector sent to instance 0x174015060'</span>
+
+Thread 0 Crashed:
+0   CoreFoundation                  0x0000000188f291b8 0x188df9000 + 1245624 <span class="o">(</span>&lt;redacted&gt; + 124<span class="o">)</span>
+1   libobjc.A.dylib                 0x000000018796055c 0x187958000 + 34140 <span class="o">(</span>objc_exception_throw + 56<span class="o">)</span>
+2   CoreFoundation                  0x0000000188f30268 0x188df9000 + 1274472 <span class="o">(</span>&lt;redacted&gt; + 140<span class="o">)</span>
+3   CoreFoundation                  0x0000000188f2d270 0x188df9000 + 1262192 <span class="o">(</span>&lt;redacted&gt; + 916<span class="o">)</span>
+4   CoreFoundation                  0x0000000188e2680c 0x188df9000 + 186380 <span class="o">(</span>_CF_forwarding_prep_0 + 92<span class="o">)</span>
+5   CMMonitorExample                0x000000010004c618 0x100044000 + 34328 <span class="o">(</span>-[MakeCrashHandler throwUncaughtNSException] + 80<span class="o">)</span>
+</code></pre></div></div>
+
+<p>会发现，Crash 日志中 <code class="highlighter-rouge">Exception Type</code> 项由2部分组成：Mach 异常 + Unix 信号。</p>
+
+<p>所以 <code class="highlighter-rouge">Exception Type:  EXC_CRASH (SIGABRT)</code> 表示：Mach 层发生了 <code class="highlighter-rouge">EXC_CRASH</code> 异常，在 host 层被转换为 <code class="highlighter-rouge">SIGABRT</code> 信号投递到出错的线程。</p>
+
+<p><strong>问题：</strong> 捕获 Mach 层异常、注册 Unix 信号处理都可以捕获 Crash，这两种方式如何选择？</p>
+
+<p><strong>答：</strong> 优选 Mach 层异常拦截。根据上面 1.2 中的描述我们知道 Mach 层异常处理时机更早些，假如 Mach 层异常处理程序让进程退出，这样 Unix 信号永远不会发生了。</p>
+
+<p>业界关于崩溃日志的收集开源项目很多，著名的有： KSCrash、plcrashreporter，提供一条龙服务的 Bugly、友盟等。我们一般使用开源项目在此基础上开发成符合公司内部需求的 bug 收集工具。一番对比后选择 KSCrash。为什么选择 KSCrash 不在本文重点。</p>
+
+<p><strong>KSCrash 功能齐全，可以捕获如下类型的 Crash</strong></p>
+
+<ul>
+  <li>Mach kernel exceptions</li>
+  <li>Fatal signals</li>
+  <li>C++ exceptions</li>
+  <li>Objective-C exceptions</li>
+  <li>Main thread deadlock (experimental)</li>
+  <li>Custom crashes (e.g. from scripting languages)</li>
+</ul>
+
+<p>所以分析 iOS  端的 Crash 收集方案也就是分析 KSCrash 的 Crash 监控实现原理。</p>
+
+<h4 id="21-mach-层异常处理">2.1. Mach 层异常处理</h4>
+
+<p>大体思路是：先创建一个异常处理端口，为该端口申请权限，再设置异常端口、新建一个内核线程，在该线程内循环等待异常。但是为了防止自己注册的 Mach 层异常处理抢占了其他 SDK、或者业务线开发者设置的逻辑，我们需要在最开始保存其他的异常处理端口，等逻辑执行完后将异常处理交给其他的端口内的逻辑处理。收集到 Crash 信息后组装数据，写入 json 文件。</p>
+
+<p><strong>流程图如下：</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095121927.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>对于 Mach 异常捕获，可以注册一个异常端口，该端口负责对当前任务的所有线程进行监听。</p>
+
+<p><strong>下面来看看关键代码:</strong></p>
+
+<p>注册 Mach 层异常监听代码</p>
+
+<pre><code class="language-objectivec">static bool installExceptionHandler()
+{
+    KSLOG_DEBUG("Installing mach exception handler.");
+
+    bool attributes_created = false;
+    pthread_attr_t attr;
+
+    kern_return_t kr;
+    int error;
+    // 拿到当前进程
+    const task_t thisTask = mach_task_self();
+    exception_mask_t mask = EXC_MASK_BAD_ACCESS |
+    EXC_MASK_BAD_INSTRUCTION |
+    EXC_MASK_ARITHMETIC |
+    EXC_MASK_SOFTWARE |
+    EXC_MASK_BREAKPOINT;
+
+    KSLOG_DEBUG("Backing up original exception ports.");
+    // 获取该 Task 上的注册好的异常端口
+    kr = task_get_exception_ports(thisTask,
+                                  mask,
+                                  g_previousExceptionPorts.masks,
+                                  &amp;g_previousExceptionPorts.count,
+                                  g_previousExceptionPorts.ports,
+                                  g_previousExceptionPorts.behaviors,
+                                  g_previousExceptionPorts.flavors);
+    // 获取失败走 failed 逻辑
+    if(kr != KERN_SUCCESS)
+    {
+        KSLOG_ERROR("task_get_exception_ports: %s", mach_error_string(kr));
+        goto failed;
+    }
+    // KSCrash 的异常为空则走执行逻辑
+    if(g_exceptionPort == MACH_PORT_NULL)
+    {
+        KSLOG_DEBUG("Allocating new port with receive rights.");
+        // 申请异常处理端口
+        kr = mach_port_allocate(thisTask,
+                                MACH_PORT_RIGHT_RECEIVE,
+                                &amp;g_exceptionPort);
+        if(kr != KERN_SUCCESS)
+        {
+            KSLOG_ERROR("mach_port_allocate: %s", mach_error_string(kr));
+            goto failed;
+        }
+
+        KSLOG_DEBUG("Adding send rights to port.");
+        // 为异常处理端口申请权限：MACH_MSG_TYPE_MAKE_SEND
+        kr = mach_port_insert_right(thisTask,
+                                    g_exceptionPort,
+                                    g_exceptionPort,
+                                    MACH_MSG_TYPE_MAKE_SEND);
+        if(kr != KERN_SUCCESS)
+        {
+            KSLOG_ERROR("mach_port_insert_right: %s", mach_error_string(kr));
+            goto failed;
+        }
+    }
+
+    KSLOG_DEBUG("Installing port as exception handler.");
+    // 为该 Task 设置异常处理端口
+    kr = task_set_exception_ports(thisTask,
+                                  mask,
+                                  g_exceptionPort,
+                                  EXCEPTION_DEFAULT,
+                                  THREAD_STATE_NONE);
+    if(kr != KERN_SUCCESS)
+    {
+        KSLOG_ERROR("task_set_exception_ports: %s", mach_error_string(kr));
+        goto failed;
+    }
+
+    KSLOG_DEBUG("Creating secondary exception thread (suspended).");
+    pthread_attr_init(&amp;attr);
+    attributes_created = true;
+    pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_DETACHED);
+    // 设置监控线程
+    error = pthread_create(&amp;g_secondaryPThread,
+                           &amp;attr,
+                           &amp;handleExceptions,
+                           kThreadSecondary);
+    if(error != 0)
+    {
+        KSLOG_ERROR("pthread_create_suspended_np: %s", strerror(error));
+        goto failed;
+    }
+    // 转换为 Mach 内核线程
+    g_secondaryMachThread = pthread_mach_thread_np(g_secondaryPThread);
+    ksmc_addReservedThread(g_secondaryMachThread);
+
+    KSLOG_DEBUG("Creating primary exception thread.");
+    error = pthread_create(&amp;g_primaryPThread,
+                           &amp;attr,
+                           &amp;handleExceptions,
+                           kThreadPrimary);
+    if(error != 0)
+    {
+        KSLOG_ERROR("pthread_create: %s", strerror(error));
+        goto failed;
+    }
+    pthread_attr_destroy(&amp;attr);
+    g_primaryMachThread = pthread_mach_thread_np(g_primaryPThread);
+    ksmc_addReservedThread(g_primaryMachThread);
+    
+    KSLOG_DEBUG("Mach exception handler installed.");
+    return true;
+
+
+failed:
+    KSLOG_DEBUG("Failed to install mach exception handler.");
+    if(attributes_created)
+    {
+        pthread_attr_destroy(&amp;attr);
+    }
+    // 还原之前的异常注册端口，将控制权还原
+    uninstallExceptionHandler();
+    return false;
+}
+</code></pre>
+
+<p><strong>处理异常的逻辑、组装崩溃信息</strong></p>
+
+<pre><code class="language-objectivec">/** Our exception handler thread routine.
+ * Wait for an exception message, uninstall our exception port, record the
+ * exception information, and write a report.
+ */
+static void* handleExceptions(void* const userData)
+{
+    MachExceptionMessage exceptionMessage = 0;
+    MachReplyMessage replyMessage = 0;
+    char* eventID = g_primaryEventID;
+
+    const char* threadName = (const char*) userData;
+    pthread_setname_np(threadName);
+    if(threadName == kThreadSecondary)
+    {
+        KSLOG_DEBUG("This is the secondary thread. Suspending.");
+        thread_suspend((thread_t)ksthread_self());
+        eventID = g_secondaryEventID;
+    }
+    // 循环读取注册好的异常端口信息
+    for(;;)
+    {
+        KSLOG_DEBUG("Waiting for mach exception");
+
+        // Wait for a message.
+        kern_return_t kr = mach_msg(&amp;exceptionMessage.header,
+                                    MACH_RCV_MSG,
+                                    0,
+                                    sizeof(exceptionMessage),
+                                    g_exceptionPort,
+                                    MACH_MSG_TIMEOUT_NONE,
+                                    MACH_PORT_NULL);
+        // 获取到信息后则代表发生了 Mach 层异常，跳出 for 循环，组装数据
+        if(kr == KERN_SUCCESS)
+        {
+            break;
+        }
+
+        // Loop and try again on failure.
+        KSLOG_ERROR("mach_msg: %s", mach_error_string(kr));
+    }
+
+    KSLOG_DEBUG("Trapped mach exception code 0x%x, subcode 0x%x",
+                exceptionMessage.code[0], exceptionMessage.code[1]);
+    if(g_isEnabled)
+    {
+        // 挂起所有线程
+        ksmc_suspendEnvironment();
+        g_isHandlingCrash = true;
+        // 通知发生了异常
+        kscm_notifyFatalExceptionCaptured(true);
+
+        KSLOG_DEBUG("Exception handler is installed. Continuing exception handling.");
+
+
+        // Switch to the secondary thread if necessary, or uninstall the handler
+        // to avoid a death loop.
+        if(ksthread_self() == g_primaryMachThread)
+        {
+            KSLOG_DEBUG("This is the primary exception thread. Activating secondary thread.");
+// TODO: This was put here to avoid a freeze. Does secondary thread ever fire?
+            restoreExceptionPorts();
+            if(thread_resume(g_secondaryMachThread) != KERN_SUCCESS)
+            {
+                KSLOG_DEBUG("Could not activate secondary thread. Restoring original exception ports.");
+            }
+        }
+        else
+        {
+            KSLOG_DEBUG("This is the secondary exception thread. Restoring original exception ports.");
+//            restoreExceptionPorts();
+        }
+
+        // Fill out crash information
+        // 组装异常所需要的方案现场信息
+        KSLOG_DEBUG("Fetching machine state.");
+        KSMC_NEW_CONTEXT(machineContext);
+        KSCrash_MonitorContext* crashContext = &amp;g_monitorContext;
+        crashContext-&gt;offendingMachineContext = machineContext;
+        kssc_initCursor(&amp;g_stackCursor, NULL, NULL);
+        if(ksmc_getContextForThread(exceptionMessage.thread.name, machineContext, true))
+        {
+            kssc_initWithMachineContext(&amp;g_stackCursor, 100, machineContext);
+            KSLOG_TRACE("Fault address 0x%x, instruction address 0x%x", kscpu_faultAddress(machineContext), kscpu_instructionAddress(machineContext));
+            if(exceptionMessage.exception == EXC_BAD_ACCESS)
+            {
+                crashContext-&gt;faultAddress = kscpu_faultAddress(machineContext);
+            }
+            else
+            {
+                crashContext-&gt;faultAddress = kscpu_instructionAddress(machineContext);
+            }
+        }
+
+        KSLOG_DEBUG("Filling out context.");
+        crashContext-&gt;crashType = KSCrashMonitorTypeMachException;
+        crashContext-&gt;eventID = eventID;
+        crashContext-&gt;registersAreValid = true;
+        crashContext-&gt;mach.type = exceptionMessage.exception;
+        crashContext-&gt;mach.code = exceptionMessage.code[0];
+        crashContext-&gt;mach.subcode = exceptionMessage.code[1];
+        if(crashContext-&gt;mach.code == KERN_PROTECTION_FAILURE &amp;&amp; crashContext-&gt;isStackOverflow)
+        {
+            // A stack overflow should return KERN_INVALID_ADDRESS, but
+            // when a stack blasts through the guard pages at the top of the stack,
+            // it generates KERN_PROTECTION_FAILURE. Correct for this.
+            crashContext-&gt;mach.code = KERN_INVALID_ADDRESS;
+        }
+        crashContext-&gt;signal.signum = signalForMachException(crashContext-&gt;mach.type, crashContext-&gt;mach.code);
+        crashContext-&gt;stackCursor = &amp;g_stackCursor;
+
+        kscm_handleException(crashContext);
+
+        KSLOG_DEBUG("Crash handling complete. Restoring original handlers.");
+        g_isHandlingCrash = false;
+        ksmc_resumeEnvironment();
+    }
+
+    KSLOG_DEBUG("Replying to mach exception message.");
+    // Send a reply saying "I didn't handle this exception".
+    replyMessage.header = exceptionMessage.header;
+    replyMessage.NDR = exceptionMessage.NDR;
+    replyMessage.returnCode = KERN_FAILURE;
+
+    mach_msg(&amp;replyMessage.header,
+             MACH_SEND_MSG,
+             sizeof(replyMessage),
+             0,
+             MACH_PORT_NULL,
+             MACH_MSG_TIMEOUT_NONE,
+             MACH_PORT_NULL);
+
+    return NULL;
+}
+</code></pre>
+
+<p><strong>还原异常处理端口，转移控制权</strong></p>
+
+<pre><code class="language-objectivec">/** Restore the original mach exception ports.
+ */
+static void restoreExceptionPorts(void)
+{
+    KSLOG_DEBUG("Restoring original exception ports.");
+    if(g_previousExceptionPorts.count == 0)
+    {
+        KSLOG_DEBUG("Original exception ports were already restored.");
+        return;
+    }
+
+    const task_t thisTask = mach_task_self();
+    kern_return_t kr;
+
+    // Reinstall old exception ports.
+    // for 循环去除保存好的在 KSCrash 之前注册好的异常端口，将每个端口注册回去
+    for(mach_msg_type_number_t i = 0; i &lt; g_previousExceptionPorts.count; i++)
+    {
+        KSLOG_TRACE("Restoring port index %d", i);
+        kr = task_set_exception_ports(thisTask,
+                                      g_previousExceptionPorts.masks[i],
+                                      g_previousExceptionPorts.ports[i],
+                                      g_previousExceptionPorts.behaviors[i],
+                                      g_previousExceptionPorts.flavors[i]);
+        if(kr != KERN_SUCCESS)
+        {
+            KSLOG_ERROR("task_set_exception_ports: %s",
+                        mach_error_string(kr));
+        }
+    }
+    KSLOG_DEBUG("Exception ports restored.");
+    g_previousExceptionPorts.count = 0;
+}
+</code></pre>
+
+<h4 id="22--signal-异常处理">2.2.  Signal 异常处理</h4>
+
+<p>对于 Mach 异常，操作系统会将其转换为对应的 <code class="highlighter-rouge">Unix 信号</code>，所以开发者可以通过注册 <code class="highlighter-rouge">signanHandler</code> 的方式来处理。</p>
+
+<p><strong>KSCrash 在这里的处理逻辑如下图：</strong></p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095158920.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p><strong>看一下关键代码:</strong></p>
+
+<p>设置信号处理函数</p>
+
+<pre><code class="language-objectivec">static bool installSignalHandler()
+{
+    KSLOG_DEBUG("Installing signal handler.");
+
+#if KSCRASH_HAS_SIGNAL_STACK
+    // 在堆上分配一块内存，
+    if(g_signalStack.ss_size == 0)
+    {
+        KSLOG_DEBUG("Allocating signal stack area.");
+        g_signalStack.ss_size = SIGSTKSZ;
+        g_signalStack.ss_sp = malloc(g_signalStack.ss_size);
+    }
+    // 信号处理函数的栈挪到堆中，而不和进程共用一块栈区
+    // sigaltstack() 函数，该函数的第 1 个参数 sigstack 是一个 stack_t 结构的指针，该结构存储了一个“可替换信号栈” 的位置及属性信息。第 2 个参数 old_sigstack 也是一个 stack_t 类型指针，它用来返回上一次建立的“可替换信号栈”的信息(如果有的话)
+    KSLOG_DEBUG("Setting signal stack area.");
+    // sigaltstack 第一个参数为创建的新的可替换信号栈，第二个参数可以设置为NULL，如果不为NULL的话，将会将旧的可替换信号栈的信息保存在里面。函数成功返回0，失败返回-1.
+    if(sigaltstack(&amp;g_signalStack, NULL) != 0)
+    {
+        KSLOG_ERROR("signalstack: %s", strerror(errno));
+        goto failed;
+    }
+#endif
+
+    const int* fatalSignals = kssignal_fatalSignals();
+    int fatalSignalsCount = kssignal_numFatalSignals();
+
+    if(g_previousSignalHandlers == NULL)
+    {
+        KSLOG_DEBUG("Allocating memory to store previous signal handlers.");
+        g_previousSignalHandlers = malloc(sizeof(*g_previousSignalHandlers)
+                                          * (unsigned)fatalSignalsCount);
+    }
+
+    // 设置信号处理函数 sigaction 的第二个参数，类型为 sigaction 结构体
+    struct sigaction action = 0;
+    // sa_flags 成员设立 SA_ONSTACK 标志，该标志告诉内核信号处理函数的栈帧就在“可替换信号栈”上建立。
+    action.sa_flags = SA_SIGINFO | SA_ONSTACK;
+#if KSCRASH_HOST_APPLE &amp;&amp; defined(__LP64__)
+    action.sa_flags |= SA_64REGSET;
+#endif
+    sigemptyset(&amp;action.sa_mask);
+    action.sa_sigaction = &amp;handleSignal;
+
+    // 遍历需要处理的信号数组
+    for(int i = 0; i &lt; fatalSignalsCount; i++)
+    {
+        // 将每个信号的处理函数绑定到上面声明的 action 去，另外用 g_previousSignalHandlers 保存当前信号的处理函数
+        KSLOG_DEBUG("Assigning handler for signal %d", fatalSignals[i]);
+        if(sigaction(fatalSignals[i], &amp;action, &amp;g_previousSignalHandlers[i]) != 0)
+        {
+            char sigNameBuff[30];
+            const char* sigName = kssignal_signalName(fatalSignals[i]);
+            if(sigName == NULL)
+            {
+                snprintf(sigNameBuff, sizeof(sigNameBuff), "%d", fatalSignals[i]);
+                sigName = sigNameBuff;
+            }
+            KSLOG_ERROR("sigaction (%s): %s", sigName, strerror(errno));
+            // Try to reverse the damage
+            for(i--;i &gt;= 0; i--)
+            {
+                sigaction(fatalSignals[i], &amp;g_previousSignalHandlers[i], NULL);
+            }
+            goto failed;
+        }
+    }
+    KSLOG_DEBUG("Signal handlers installed.");
+    return true;
+
+failed:
+    KSLOG_DEBUG("Failed to install signal handlers.");
+    return false;
+}
+</code></pre>
+
+<p><strong>信号处理时记录线程等上下文信息</strong></p>
+
+<pre><code class="language-objectivec">static void handleSignal(int sigNum, siginfo_t* signalInfo, void* userContext)
+{
+    KSLOG_DEBUG("Trapped signal %d", sigNum);
+    if(g_isEnabled)
+    {
+        ksmc_suspendEnvironment();
+        kscm_notifyFatalExceptionCaptured(false);
+        
+        KSLOG_DEBUG("Filling out context.");
+        KSMC_NEW_CONTEXT(machineContext);
+        ksmc_getContextForSignal(userContext, machineContext);
+        kssc_initWithMachineContext(&amp;g_stackCursor, 100, machineContext);
+        // 记录信号处理时的上下文信息
+        KSCrash_MonitorContext* crashContext = &amp;g_monitorContext;
+        memset(crashContext, 0, sizeof(*crashContext));
+        crashContext-&gt;crashType = KSCrashMonitorTypeSignal;
+        crashContext-&gt;eventID = g_eventID;
+        crashContext-&gt;offendingMachineContext = machineContext;
+        crashContext-&gt;registersAreValid = true;
+        crashContext-&gt;faultAddress = (uintptr_t)signalInfo-&gt;si_addr;
+        crashContext-&gt;signal.userContext = userContext;
+        crashContext-&gt;signal.signum = signalInfo-&gt;si_signo;
+        crashContext-&gt;signal.sigcode = signalInfo-&gt;si_code;
+        crashContext-&gt;stackCursor = &amp;g_stackCursor;
+
+        kscm_handleException(crashContext);
+        ksmc_resumeEnvironment();
+    }
+
+    KSLOG_DEBUG("Re-raising signal for regular handlers to catch.");
+    // This is technically not allowed, but it works in OSX and iOS.
+    raise(sigNum);
+}
+</code></pre>
+
+<p><strong>KSCrash 信号处理后还原之前的信号处理权限</strong></p>
+
+<pre><code class="language-objectivec">static void uninstallSignalHandler(void)
+{
+    KSLOG_DEBUG("Uninstalling signal handlers.");
+
+    const int* fatalSignals = kssignal_fatalSignals();
+    int fatalSignalsCount = kssignal_numFatalSignals();
+    // 遍历需要处理信号数组，将之前的信号处理函数还原
+    for(int i = 0; i &lt; fatalSignalsCount; i++)
+    {
+        KSLOG_DEBUG("Restoring original handler for signal %d", fatalSignals[i]);
+        sigaction(fatalSignals[i], &amp;g_previousSignalHandlers[i], NULL);
+    }
+    
+    KSLOG_DEBUG("Signal handlers uninstalled.");
+}
+</code></pre>
+
+<p><strong>说明：</strong></p>
+
+<ol>
+  <li>
+    <p>先从堆上分配一块内存区域，被称为“可替换信号栈”，目的是将信号处理函数的栈干掉，用堆上的内存区域代替，而不和进程共用一块栈区。</p>
+
+    <p>为什么这么做？一个进程可能有 n 个线程，每个线程都有自己的任务，假如某个线程执行出错，这样就会导致整个进程的崩溃。所以为了信号处理函数正常运行，需要为信号处理函数设置单独的运行空间。另一种情况是递归函数将系统默认的栈空间用尽了，但是信号处理函数使用的栈是它实现在堆中分配的空间，而不是系统默认的栈，所以它仍旧可以正常工作。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">int sigaltstack(const stack_t * __restrict, stack_t * __restrict)</code> 函数的二个参数都是 <code class="highlighter-rouge">stack_t</code> 结构的指针，存储了可替换信号栈的信息（栈的起始地址、栈的长度、状态）。第1个参数该结构存储了一个“可替换信号栈” 的位置及属性信息。第 2 个参数用来返回上一次建立的“可替换信号栈”的信息(如果有的话)。</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_STRUCT_SIGALTSTACK</span>
+<span class="p">{</span>
+	<span class="kt">void</span>            <span class="o">*</span><span class="n">ss_sp</span><span class="p">;</span>         <span class="cm">/* signal stack base */</span>
+	<span class="n">__darwin_size_t</span> <span class="n">ss_size</span><span class="p">;</span>        <span class="cm">/* signal stack length */</span>
+	<span class="kt">int</span>             <span class="n">ss_flags</span><span class="p">;</span>       <span class="cm">/* SA_DISABLE and/or SA_ONSTACK */</span>
+<span class="p">};</span>
+<span class="k">typedef</span> <span class="n">_STRUCT_SIGALTSTACK</span>     <span class="n">stack_t</span><span class="p">;</span> <span class="cm">/* [???] signal stack */</span>
+</code></pre></div>    </div>
+
+    <p>新创建的可替换信号栈，<code class="highlighter-rouge">ss_flags</code> 必须设置为 0。系统定义了 <code class="highlighter-rouge">SIGSTKSZ</code> 常量，可满足绝大多可替换信号栈的需求。</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+ * Structure used in sigaltstack call.
+ */</span>
+   
+<span class="cp">#define SS_ONSTACK      0x0001  </span><span class="cm">/* take signal on signal stack */</span><span class="cp">
+#define SS_DISABLE      0x0004  </span><span class="cm">/* disable taking signals on alternate stack */</span><span class="cp">
+#define MINSIGSTKSZ     32768   </span><span class="cm">/* (32K)minimum allowable stack */</span><span class="cp">
+#define SIGSTKSZ        131072  </span><span class="cm">/* (128K)recommended stack size */</span><span class="cp">
+</span></code></pre></div>    </div>
+
+    <p><code class="highlighter-rouge">sigaltstack</code> 系统调用通知内核“可替换信号栈”已经建立。</p>
+
+    <p><code class="highlighter-rouge">ss_flags</code> 为 <code class="highlighter-rouge">SS_ONSTACK</code> 时，表示进程当前正在“可替换信号栈”中执行，如果此时试图去建立一个新的“可替换信号栈”，那么会遇到 <code class="highlighter-rouge">EPERM</code> (禁止该动作) 的错误；为 <code class="highlighter-rouge">SS_DISABLE</code> 说明当前没有已建立的“可替换信号栈”，禁止建立“可替换信号栈”。</p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">int	sigaction(int, const struct sigaction * __restrict, struct sigaction * __restrict);</code></p>
+
+    <p>第一个函数表示需要处理的信号值，但不能是 <code class="highlighter-rouge">SIGKILL</code> 和 <code class="highlighter-rouge">SIGSTOP</code> ，这两个信号的处理函数不允许用户重写，因为它们给超级用户提供了终止程序的方法（ <code class="highlighter-rouge">SIGKILL</code> and <code class="highlighter-rouge">SIGSTOP</code> cannot be caught, blocked, or ignored）；</p>
+
+    <p>第二个和第三个参数是一个 <code class="highlighter-rouge">sigaction</code> 结构体。如果第二个参数不为空则代表将其指向信号处理函数，第三个参数不为空，则将之前的信号处理函数保存到该指针中。如果第二个参数为空，第三个参数不为空，则可以获取当前的信号处理函数。</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/*
+ * Signal vector "template" used in sigaction call.
+ */</span>
+<span class="k">struct</span>  <span class="n">sigaction</span> <span class="p">{</span>
+	<span class="k">union</span> <span class="n">__sigaction_u</span> <span class="n">__sigaction_u</span><span class="p">;</span>  <span class="cm">/* signal handler */</span>
+	<span class="n">sigset_t</span> <span class="n">sa_mask</span><span class="p">;</span>               <span class="cm">/* signal mask to apply */</span>
+	<span class="kt">int</span>     <span class="n">sa_flags</span><span class="p">;</span>               <span class="cm">/* see signal options below */</span>
+<span class="p">};</span>
+</code></pre></div>    </div>
+
+    <p><code class="highlighter-rouge">sigaction</code> 函数的 <code class="highlighter-rouge">sa_flags</code> 参数需要设置 <code class="highlighter-rouge">SA_ONSTACK</code> 标志，告诉内核信号处理函数的栈帧就在“可替换信号栈”上建立。</p>
+  </li>
+</ol>
+
+<h4 id="23-c-异常处理">2.3. C++ 异常处理</h4>
+
+<p>c++ 异常处理的实现是依靠了标准库的 <code class="highlighter-rouge">std::set_terminate(CPPExceptionTerminate)</code> 函数。</p>
+
+<p>iOS 工程中某些功能的实现可能使用了C、C++等。假如抛出 C++ 异常，如果该异常可以被转换为 NSException，则走 OC 异常捕获机制，如果不能转换，则继续走 C++ 异常流程，也就是 <code class="highlighter-rouge">default_terminate_handler</code>。这个 C++ 异常的默认 terminate 函数内部调用 <code class="highlighter-rouge">abort_message</code> 函数，最后触发了一个 <code class="highlighter-rouge">abort</code> 调用，系统产生一个 <code class="highlighter-rouge">SIGABRT</code> 信号。</p>
+
+<p>在系统抛出 C++ 异常后，加一层 <code class="highlighter-rouge">try...catch...</code> 来判断该异常是否可以转换为 <code class="highlighter-rouge">NSException</code>，再重新抛出的C++异常。此时异常的现场堆栈已经消失，所以上层通过捕获 <code class="highlighter-rouge">SIGABRT</code> 信号是无法还原发生异常时的场景，即异常堆栈缺失。</p>
+
+<p>为什么？<code class="highlighter-rouge">try...catch...</code> 语句内部会调用 <code class="highlighter-rouge">__cxa_rethrow()</code> 抛出异常，<code class="highlighter-rouge">__cxa_rethrow()</code> 内部又会调用 <code class="highlighter-rouge">unwind</code>，<code class="highlighter-rouge">unwind</code> 可以简单理解为函数调用的逆调用，主要用来清理函数调用过程中每个函数生成的局部变量，一直到最外层的 catch 语句所在的函数，并把控制移交给 catch 语句，这就是C++异常的堆栈消失原因。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="nf">setEnabled</span><span class="p">(</span><span class="kt">bool</span> <span class="n">isEnabled</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">isEnabled</span> <span class="o">!=</span> <span class="n">g_isEnabled</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">g_isEnabled</span> <span class="o">=</span> <span class="n">isEnabled</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">isEnabled</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">initialize</span><span class="p">();</span>
+
+            <span class="n">ksid_generate</span><span class="p">(</span><span class="n">g_eventID</span><span class="p">);</span>
+            <span class="n">g_originalTerminateHandler</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">set_terminate</span><span class="p">(</span><span class="n">CPPExceptionTerminate</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">set_terminate</span><span class="p">(</span><span class="n">g_originalTerminateHandler</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">g_captureNextStackTrace</span> <span class="o">=</span> <span class="n">isEnabled</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">static</span> <span class="kt">bool</span> <span class="n">isInitialized</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">isInitialized</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">isInitialized</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="n">kssc_initCursor</span><span class="p">(</span><span class="o">&amp;</span><span class="n">g_stackCursor</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">kssc_initCursor</span><span class="p">(</span><span class="n">KSStackCursor</span> <span class="o">*</span><span class="n">cursor</span><span class="p">,</span>
+                     <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">resetCursor</span><span class="p">)(</span><span class="n">KSStackCursor</span><span class="o">*</span><span class="p">),</span>
+                     <span class="kt">bool</span> <span class="p">(</span><span class="o">*</span><span class="n">advanceCursor</span><span class="p">)(</span><span class="n">KSStackCursor</span><span class="o">*</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">cursor</span><span class="o">-&gt;</span><span class="n">symbolicate</span> <span class="o">=</span> <span class="n">kssymbolicator_symbolicate</span><span class="p">;</span>
+    <span class="n">cursor</span><span class="o">-&gt;</span><span class="n">advanceCursor</span> <span class="o">=</span> <span class="n">advanceCursor</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">?</span> <span class="n">advanceCursor</span> <span class="o">:</span> <span class="n">g_advanceCursor</span><span class="p">;</span>
+    <span class="n">cursor</span><span class="o">-&gt;</span><span class="n">resetCursor</span> <span class="o">=</span> <span class="n">resetCursor</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="o">?</span> <span class="n">resetCursor</span> <span class="o">:</span> <span class="n">kssc_resetCursor</span><span class="p">;</span>
+    <span class="n">cursor</span><span class="o">-&gt;</span><span class="n">resetCursor</span><span class="p">(</span><span class="n">cursor</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="nf">CPPExceptionTerminate</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ksmc_suspendEnvironment</span><span class="p">();</span>
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Trapped c++ exception"</span><span class="p">);</span>
+    <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">name</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">type_info</span><span class="o">*</span> <span class="n">tinfo</span> <span class="o">=</span> <span class="n">__cxxabiv1</span><span class="o">::</span><span class="n">__cxa_current_exception_type</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">tinfo</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">tinfo</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">();</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">name</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">strcmp</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="s">"NSException"</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">kscm_notifyFatalExceptionCaptured</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+        <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="n">crashContext</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_monitorContext</span><span class="p">;</span>
+        <span class="n">memset</span><span class="p">(</span><span class="n">crashContext</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">crashContext</span><span class="p">));</span>
+
+        <span class="kt">char</span> <span class="n">descriptionBuff</span><span class="p">[</span><span class="n">DESCRIPTION_BUFFER_LENGTH</span><span class="p">];</span>
+        <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">description</span> <span class="o">=</span> <span class="n">descriptionBuff</span><span class="p">;</span>
+        <span class="n">descriptionBuff</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Discovering what kind of exception was thrown."</span><span class="p">);</span>
+        <span class="n">g_captureNextStackTrace</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="k">try</span>
+        <span class="p">{</span>
+            <span class="k">throw</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">catch</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exception</span><span class="o">&amp;</span> <span class="n">exc</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">strncpy</span><span class="p">(</span><span class="n">descriptionBuff</span><span class="p">,</span> <span class="n">exc</span><span class="p">.</span><span class="n">what</span><span class="p">(),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">descriptionBuff</span><span class="p">));</span>
+        <span class="p">}</span>
+<span class="cp">#define CATCH_VALUE(TYPE, PRINTFTYPE) \
+catch(TYPE value)\
+{ \
+    snprintf(descriptionBuff, sizeof(descriptionBuff), "%" #PRINTFTYPE, value); \
+}
+</span>        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">char</span><span class="p">,</span>                 <span class="n">d</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">short</span><span class="p">,</span>                <span class="n">d</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span>                  <span class="n">d</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">long</span><span class="p">,</span>                <span class="n">ld</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">long</span> <span class="kt">long</span><span class="p">,</span>          <span class="n">lld</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="p">,</span>        <span class="n">u</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">short</span><span class="p">,</span>       <span class="n">u</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span><span class="p">,</span>         <span class="n">u</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">,</span>       <span class="n">lu</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span><span class="p">,</span> <span class="n">llu</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">float</span><span class="p">,</span>                <span class="n">f</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">double</span><span class="p">,</span>               <span class="n">f</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">long</span> <span class="kt">double</span><span class="p">,</span>         <span class="n">Lf</span><span class="p">)</span>
+        <span class="n">CATCH_VALUE</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">,</span>                <span class="n">s</span><span class="p">)</span>
+        <span class="k">catch</span><span class="p">(...)</span>
+        <span class="p">{</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">g_captureNextStackTrace</span> <span class="o">=</span> <span class="n">g_isEnabled</span><span class="p">;</span>
+
+        <span class="c1">// TODO: Should this be done here? Maybe better in the exception handler?</span>
+        <span class="n">KSMC_NEW_CONTEXT</span><span class="p">(</span><span class="n">machineContext</span><span class="p">);</span>
+        <span class="n">ksmc_getContextForThread</span><span class="p">(</span><span class="n">ksthread_self</span><span class="p">(),</span> <span class="n">machineContext</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+
+        <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Filling out context."</span><span class="p">);</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">crashType</span> <span class="o">=</span> <span class="n">KSCrashMonitorTypeCPPException</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">eventID</span> <span class="o">=</span> <span class="n">g_eventID</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">registersAreValid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">stackCursor</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_stackCursor</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">CPPException</span><span class="p">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">exceptionName</span> <span class="o">=</span> <span class="n">name</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">crashReason</span> <span class="o">=</span> <span class="n">description</span><span class="p">;</span>
+        <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">offendingMachineContext</span> <span class="o">=</span> <span class="n">machineContext</span><span class="p">;</span>
+
+        <span class="n">kscm_handleException</span><span class="p">(</span><span class="n">crashContext</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Detected NSException. Letting the current NSException handler deal with it."</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">ksmc_resumeEnvironment</span><span class="p">();</span>
+
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Calling original terminate handler."</span><span class="p">);</span>
+    <span class="n">g_originalTerminateHandler</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="24-objective-c-异常处理">2.4. Objective-C 异常处理</h4>
+
+<p>对于 OC 层面的 NSException 异常处理较为容易，可以通过注册 <code class="highlighter-rouge">NSUncaughtExceptionHandler</code> 来捕获异常信息，通过 NSException 参数来做 Crash 信息的收集，交给数据上报组件。</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="nf">setEnabled</span><span class="p">(</span><span class="kt">bool</span> <span class="n">isEnabled</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">isEnabled</span> <span class="o">!=</span> <span class="n">g_isEnabled</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">g_isEnabled</span> <span class="o">=</span> <span class="n">isEnabled</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">isEnabled</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="err">@</span><span class="s">"Backing up original handler."</span><span class="p">);</span>
+            <span class="c1">// 记录之前的 OC 异常处理函数</span>
+            <span class="n">g_previousUncaughtExceptionHandler</span> <span class="o">=</span> <span class="n">NSGetUncaughtExceptionHandler</span><span class="p">();</span>
+            
+            <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="err">@</span><span class="s">"Setting new handler."</span><span class="p">);</span>
+            <span class="c1">// 设置新的 OC 异常处理函数</span>
+            <span class="n">NSSetUncaughtExceptionHandler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">handleException</span><span class="p">);</span>
+            <span class="n">KSCrash</span><span class="p">.</span><span class="n">sharedInstance</span><span class="p">.</span><span class="n">uncaughtExceptionHandler</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">handleException</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="err">@</span><span class="s">"Restoring original handler."</span><span class="p">);</span>
+            <span class="n">NSSetUncaughtExceptionHandler</span><span class="p">(</span><span class="n">g_previousUncaughtExceptionHandler</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="25-主线程死锁">2.5. 主线程死锁</h4>
+
+<p>主线程死锁的检测和 ANR 的检测有些类似</p>
+
+<ul>
+  <li>
+    <p>创建一个线程，在线程运行方法中用 <code class="highlighter-rouge">do...while...</code> 循环处理逻辑，加了 autorelease 避免内存过高</p>
+  </li>
+  <li>
+    <p>有一个 <code class="highlighter-rouge">awaitingResponse</code> 属性和 <code class="highlighter-rouge">watchdogPulse</code> 方法。watchdogPulse 主要逻辑为设置 <code class="highlighter-rouge">awaitingResponse</code> 为 YES，切换到主线程中，设置 <code class="highlighter-rouge">awaitingResponse</code> 为 NO，</p>
+
+    <pre><code class="language-objectivec">- (void) watchdogPulse
+{
+    __block id blockSelf = self;
+    self.awaitingResponse = YES;
+    dispatch_async(dispatch_get_main_queue(), ^
+                   {
+                       [blockSelf watchdogAnswer];
+                   });
+}
+</code></pre>
+  </li>
+  <li>
+    <p>线程的执行方法里面不断循环，等待设置的 <code class="highlighter-rouge">g_watchdogInterval</code> 后判断 <code class="highlighter-rouge">awaitingResponse</code> 的属性值是不是初始状态的值，否则判断为死锁</p>
+
+    <pre><code class="language-objectivec">- (void) runMonitor
+{
+    BOOL cancelled = NO;
+    do
+    {
+        // Only do a watchdog check if the watchdog interval is &gt; 0.
+        // If the interval is &lt;= 0, just idle until the user changes it.
+        @autoreleasepool {
+            NSTimeInterval sleepInterval = g_watchdogInterval;
+            BOOL runWatchdogCheck = sleepInterval &gt; 0;
+            if(!runWatchdogCheck)
+            {
+                sleepInterval = kIdleInterval;
+            }
+            [NSThread sleepForTimeInterval:sleepInterval];
+            cancelled = self.monitorThread.isCancelled;
+            if(!cancelled &amp;&amp; runWatchdogCheck)
+            {
+                if(self.awaitingResponse)
+                {
+                    [self handleDeadlock];
+                }
+                else
+                {
+                    [self watchdogPulse];
+                }
+            }
+        }
+    } while (!cancelled);
+}
+</code></pre>
+  </li>
+</ul>
+
+<h4 id="26-crash-的生成与保存">2.6 Crash 的生成与保存</h4>
+
+<h5 id="261-crash-日志的生成逻辑">2.6.1 Crash 日志的生成逻辑</h5>
+
+<p>上面的部分讲过了 iOS 应用开发中的各种 crash 监控逻辑，接下来就应该分析下 crash 捕获后如何将 crash 信息记录下来，也就是保存到应用沙盒中。</p>
+
+<p>拿主线程死锁这种 crash 举例子，看看 KSCrash 是如何记录 crash 信息的。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// KSCrashMonitor_Deadlock.m</span>
+<span class="o">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">handleDeadlock</span>
+<span class="p">{</span>
+    <span class="n">ksmc_suspendEnvironment</span><span class="p">();</span>
+    <span class="n">kscm_notifyFatalExceptionCaptured</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+
+    <span class="n">KSMC_NEW_CONTEXT</span><span class="p">(</span><span class="n">machineContext</span><span class="p">);</span>
+    <span class="n">ksmc_getContextForThread</span><span class="p">(</span><span class="n">g_mainQueueThread</span><span class="p">,</span> <span class="n">machineContext</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+    <span class="n">KSStackCursor</span> <span class="n">stackCursor</span><span class="p">;</span>
+    <span class="n">kssc_initWithMachineContext</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stackCursor</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">machineContext</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="n">eventID</span><span class="p">[</span><span class="mi">37</span><span class="p">];</span>
+    <span class="n">ksid_generate</span><span class="p">(</span><span class="n">eventID</span><span class="p">);</span>
+
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="err">@</span><span class="s">"Filling out context."</span><span class="p">);</span>
+    <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="n">crashContext</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_monitorContext</span><span class="p">;</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">crashContext</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">crashContext</span><span class="p">));</span>
+    <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">crashType</span> <span class="o">=</span> <span class="n">KSCrashMonitorTypeMainThreadDeadlock</span><span class="p">;</span>
+    <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">eventID</span> <span class="o">=</span> <span class="n">eventID</span><span class="p">;</span>
+    <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">registersAreValid</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">offendingMachineContext</span> <span class="o">=</span> <span class="n">machineContext</span><span class="p">;</span>
+    <span class="n">crashContext</span><span class="o">-&gt;</span><span class="n">stackCursor</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">stackCursor</span><span class="p">;</span>
+    
+    <span class="n">kscm_handleException</span><span class="p">(</span><span class="n">crashContext</span><span class="p">);</span>
+    <span class="n">ksmc_resumeEnvironment</span><span class="p">();</span>
+
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="err">@</span><span class="s">"Calling abort()"</span><span class="p">);</span>
+    <span class="n">abort</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>其他几个 crash 也是一样，异常信息经过包装交给 <code class="highlighter-rouge">kscm_handleException()</code> 函数处理。可以看到这个函数被其他几种 crash 捕获后所调用。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095227159.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="cm">/** Start general exception processing.
+ *
+ * @oaram context Contextual information about the exception.
+ */</span>
+<span class="kt">void</span> <span class="nf">kscm_handleException</span><span class="p">(</span><span class="k">struct</span> <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="n">context</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">context</span><span class="o">-&gt;</span><span class="n">requiresAsyncSafety</span> <span class="o">=</span> <span class="n">g_requiresAsyncSafety</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">g_crashedDuringExceptionHandling</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">context</span><span class="o">-&gt;</span><span class="n">crashedDuringCrashHandling</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">g_monitorsCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">Monitor</span><span class="o">*</span> <span class="n">monitor</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">g_monitors</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+        <span class="c1">// 判断当前的 crash 监控是开启状态</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">isMonitorEnabled</span><span class="p">(</span><span class="n">monitor</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="c1">// 针对每种 crash 类型做一些额外的补充信息</span>
+            <span class="n">addContextualInfoToEvent</span><span class="p">(</span><span class="n">monitor</span><span class="p">,</span> <span class="n">context</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// 真正处理 crash 信息，保存 json 格式的 crash 信息</span>
+    <span class="n">g_onExceptionEvent</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+
+    
+    <span class="k">if</span><span class="p">(</span><span class="n">g_handlingFatalException</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">g_crashedDuringExceptionHandling</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Exception is fatal. Restoring original handlers."</span><span class="p">);</span>
+        <span class="n">kscm_setActiveMonitors</span><span class="p">(</span><span class="n">KSCrashMonitorTypeNone</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">g_onExceptionEvent</code> 是一个 block，声明为 <code class="highlighter-rouge">static void (*g_onExceptionEvent)(struct KSCrash_MonitorContext* monitorContext);</code>  在 <code class="highlighter-rouge">KSCrashMonitor.c</code> 中被赋值</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">kscm_setEventCallback</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">onEvent</span><span class="p">)(</span><span class="k">struct</span> <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="n">monitorContext</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">g_onExceptionEvent</span> <span class="o">=</span> <span class="n">onEvent</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">kscm_setEventCallback()</code>  函数在 <code class="highlighter-rouge">KSCrashC.c</code> 文件中被调用</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">KSCrashMonitorType</span> <span class="nf">kscrash_install</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">appName</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="k">const</span> <span class="n">installPath</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Installing crash reporter."</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">g_installed</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Crash reporter already installed."</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">g_monitoring</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">g_installed</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="kt">char</span> <span class="n">path</span><span class="p">[</span><span class="n">KSFU_MAX_PATH_LENGTH</span><span class="p">];</span>
+    <span class="n">snprintf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s">"%s/Reports"</span><span class="p">,</span> <span class="n">installPath</span><span class="p">);</span>
+    <span class="n">ksfu_makePath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+    <span class="n">kscrs_initialize</span><span class="p">(</span><span class="n">appName</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+
+    <span class="n">snprintf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s">"%s/Data"</span><span class="p">,</span> <span class="n">installPath</span><span class="p">);</span>
+    <span class="n">ksfu_makePath</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+    <span class="n">snprintf</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s">"%s/Data/CrashState.json"</span><span class="p">,</span> <span class="n">installPath</span><span class="p">);</span>
+    <span class="n">kscrashstate_initialize</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+
+    <span class="n">snprintf</span><span class="p">(</span><span class="n">g_consoleLogPath</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">g_consoleLogPath</span><span class="p">),</span> <span class="s">"%s/Data/ConsoleLog.txt"</span><span class="p">,</span> <span class="n">installPath</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">g_shouldPrintPreviousLog</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printPreviousLog</span><span class="p">(</span><span class="n">g_consoleLogPath</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">kslog_setLogFilename</span><span class="p">(</span><span class="n">g_consoleLogPath</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+    
+    <span class="n">ksccd_init</span><span class="p">(</span><span class="mi">60</span><span class="p">);</span>
+    <span class="c1">// 设置 crash 发生时的 callback 函数</span>
+    <span class="n">kscm_setEventCallback</span><span class="p">(</span><span class="n">onCrash</span><span class="p">);</span>
+    <span class="n">KSCrashMonitorType</span> <span class="n">monitors</span> <span class="o">=</span> <span class="n">kscrash_setMonitoring</span><span class="p">(</span><span class="n">g_monitoring</span><span class="p">);</span>
+
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Installation complete."</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">monitors</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/** Called when a crash occurs.
+ *
+ * This function gets passed as a callback to a crash handler.
+ */</span>
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">onCrash</span><span class="p">(</span><span class="k">struct</span> <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="n">monitorContext</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">KSLOG_DEBUG</span><span class="p">(</span><span class="s">"Updating application state to note crash."</span><span class="p">);</span>
+    <span class="n">kscrashstate_notifyAppCrash</span><span class="p">();</span>
+    <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">consoleLogPath</span> <span class="o">=</span> <span class="n">g_shouldAddConsoleLogToReport</span> <span class="o">?</span> <span class="n">g_consoleLogPath</span> <span class="o">:</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="c1">// 正在处理 crash 的时候，发生了再次 crash</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">crashedDuringCrashHandling</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">kscrashreport_writeRecrashReport</span><span class="p">(</span><span class="n">monitorContext</span><span class="p">,</span> <span class="n">g_lastCrashReportFilePath</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="c1">// 1. 先根据当前时间创建新的 crash 的文件路径</span>
+        <span class="kt">char</span> <span class="n">crashReportFilePath</span><span class="p">[</span><span class="n">KSFU_MAX_PATH_LENGTH</span><span class="p">];</span>
+        <span class="n">kscrs_getNextCrashReportPath</span><span class="p">(</span><span class="n">crashReportFilePath</span><span class="p">);</span>
+        <span class="c1">// 2. 将新生成的文件路径保存到 g_lastCrashReportFilePath</span>
+        <span class="n">strncpy</span><span class="p">(</span><span class="n">g_lastCrashReportFilePath</span><span class="p">,</span> <span class="n">crashReportFilePath</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">g_lastCrashReportFilePath</span><span class="p">));</span>
+        <span class="c1">// 3. 将新生成的文件路径传入函数进行 crash 写入</span>
+        <span class="n">kscrashreport_writeStandardReport</span><span class="p">(</span><span class="n">monitorContext</span><span class="p">,</span> <span class="n">crashReportFilePath</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>接下来的函数就是具体的日志写入文件的实现。2个函数做的事情相似，都是格式化为 json 形式并写入文件。区别在于 crash 写入时如果再次发生 crash， 则走简易版的写入逻辑 <code class="highlighter-rouge">kscrashreport_writeRecrashReport()</code>，否则走标准的写入逻辑 <code class="highlighter-rouge">kscrashreport_writeStandardReport()</code>。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bool</span> <span class="nf">ksfu_openBufferedWriter</span><span class="p">(</span><span class="n">KSBufferedWriter</span><span class="o">*</span> <span class="n">writer</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="k">const</span> <span class="n">path</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">writeBuffer</span><span class="p">,</span> <span class="kt">int</span> <span class="n">writeBufferLength</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">writeBuffer</span><span class="p">;</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">bufferLength</span> <span class="o">=</span> <span class="n">writeBufferLength</span><span class="p">;</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">position</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="cm">/*
+     open() 的第二个参数描述的是文件操作的权限
+     #define O_RDONLY        0x0000         open for reading only
+     #define O_WRONLY        0x0001         open for writing only
+     #define O_RDWR          0x0002         open for reading and writing
+     #define O_ACCMODE       0x0003         mask for above mode
+     
+     #define O_CREAT         0x0200         create if nonexistant
+     #define O_TRUNC         0x0400         truncate to zero length
+     #define O_EXCL          0x0800         error if already exists
+     
+     0755：即用户具有读/写/执行权限，组用户和其它用户具有读写权限；
+     0644：即用户具有读写权限，组用户和其它用户具有只读权限；
+     成功则返回文件描述符，若出现则返回 -1
+     */</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">fd</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">O_RDWR</span> <span class="o">|</span> <span class="n">O_CREAT</span> <span class="o">|</span> <span class="n">O_EXCL</span><span class="p">,</span> <span class="mo">0644</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">writer</span><span class="o">-&gt;</span><span class="n">fd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">KSLOG_ERROR</span><span class="p">(</span><span class="s">"Could not open crash report file %s: %s"</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Write a standard crash report to a file.
+ *
+ *  @param monitorContext Contextual information about the crash and environment.
+ *                      The caller must fill this out before passing it in.
+ *
+ *  @param path The file to write to.
+ */</span>
+<span class="kt">void</span> <span class="nf">kscrashreport_writeStandardReport</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="k">const</span> <span class="n">monitorContext</span><span class="p">,</span>
+                                       <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+		<span class="n">KSLOG_INFO</span><span class="p">(</span><span class="s">"Writing crash report to %s"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="n">writeBuffer</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+    <span class="n">KSBufferedWriter</span> <span class="n">bufferedWriter</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">ksfu_openBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">writeBuffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">writeBuffer</span><span class="p">)))</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">ksccd_freeze</span><span class="p">();</span>
+    
+    <span class="n">KSJSONEncodeContext</span> <span class="n">jsonContext</span><span class="p">;</span>
+    <span class="n">jsonContext</span><span class="p">.</span><span class="n">userData</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">;</span>
+    <span class="n">KSCrashReportWriter</span> <span class="n">concreteWriter</span><span class="p">;</span>
+    <span class="n">KSCrashReportWriter</span><span class="o">*</span> <span class="n">writer</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">concreteWriter</span><span class="p">;</span>
+    <span class="n">prepareReportWriter</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">jsonContext</span><span class="p">);</span>
+
+    <span class="n">ksjson_beginEncode</span><span class="p">(</span><span class="n">getJsonContext</span><span class="p">(</span><span class="n">writer</span><span class="p">),</span> <span class="nb">true</span><span class="p">,</span> <span class="n">addJSONData</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">beginObject</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Report</span><span class="p">);</span>
+    <span class="p">{</span>
+        <span class="n">writeReportInfo</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span>
+                        <span class="n">KSCrashField_Report</span><span class="p">,</span>
+                        <span class="n">KSCrashReportType_Standard</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">eventID</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">System</span><span class="p">.</span><span class="n">processName</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writeBinaryImages</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_BinaryImages</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writeProcessState</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_ProcessState</span><span class="p">,</span> <span class="n">monitorContext</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writeSystemInfo</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_System</span><span class="p">,</span> <span class="n">monitorContext</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writer</span><span class="o">-&gt;</span><span class="n">beginObject</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Crash</span><span class="p">);</span>
+        <span class="p">{</span>
+            <span class="n">writeError</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Error</span><span class="p">,</span> <span class="n">monitorContext</span><span class="p">);</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+            <span class="n">writeAllThreads</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span>
+                            <span class="n">KSCrashField_Threads</span><span class="p">,</span>
+                            <span class="n">monitorContext</span><span class="p">,</span>
+                            <span class="n">g_introspectionRules</span><span class="p">.</span><span class="n">enabled</span><span class="p">);</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">writer</span><span class="o">-&gt;</span><span class="n">endContainer</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">g_userInfoJSON</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">addJSONElement</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_User</span><span class="p">,</span> <span class="n">g_userInfoJSON</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">writer</span><span class="o">-&gt;</span><span class="n">beginObject</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_User</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">g_userSectionWriteCallback</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+            <span class="n">g_userSectionWriteCallback</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">writer</span><span class="o">-&gt;</span><span class="n">endContainer</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writeDebugInfo</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Debug</span><span class="p">,</span> <span class="n">monitorContext</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">endContainer</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+    
+    <span class="n">ksjson_endEncode</span><span class="p">(</span><span class="n">getJsonContext</span><span class="p">(</span><span class="n">writer</span><span class="p">));</span>
+    <span class="n">ksfu_closeBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+    <span class="n">ksccd_unfreeze</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cm">/** Write a minimal crash report to a file.
+ *
+ * @param monitorContext Contextual information about the crash and environment.
+ *                       The caller must fill this out before passing it in.
+ *
+ * @param path The file to write to.
+ */</span>
+<span class="kt">void</span> <span class="nf">kscrashreport_writeRecrashReport</span><span class="p">(</span><span class="k">const</span> <span class="k">struct</span> <span class="n">KSCrash_MonitorContext</span><span class="o">*</span> <span class="k">const</span> <span class="n">monitorContext</span><span class="p">,</span>
+                                      <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">path</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">char</span> <span class="n">writeBuffer</span><span class="p">[</span><span class="mi">1024</span><span class="p">];</span>
+    <span class="n">KSBufferedWriter</span> <span class="n">bufferedWriter</span><span class="p">;</span>
+    <span class="k">static</span> <span class="kt">char</span> <span class="n">tempPath</span><span class="p">[</span><span class="n">KSFU_MAX_PATH_LENGTH</span><span class="p">];</span>
+    <span class="c1">// 将传递过来的上份 crash report 文件名路径（/var/mobile/Containers/Data/Application/******/Library/Caches/KSCrash/Test/Reports/Test-report-******.json）修改为去掉 .json ，加上 .old 成为新的文件路径 /var/mobile/Containers/Data/Application/******/Library/Caches/KSCrash/Test/Reports/Test-report-******.old</span>
+
+    <span class="n">strncpy</span><span class="p">(</span><span class="n">tempPath</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">tempPath</span><span class="p">)</span> <span class="o">-</span> <span class="mi">10</span><span class="p">);</span>
+    <span class="n">strncpy</span><span class="p">(</span><span class="n">tempPath</span> <span class="o">+</span> <span class="n">strlen</span><span class="p">(</span><span class="n">tempPath</span><span class="p">)</span> <span class="o">-</span> <span class="mi">5</span><span class="p">,</span> <span class="s">".old"</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="n">KSLOG_INFO</span><span class="p">(</span><span class="s">"Writing recrash report to %s"</span><span class="p">,</span> <span class="n">path</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">rename</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">tempPath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">KSLOG_ERROR</span><span class="p">(</span><span class="s">"Could not rename %s to %s: %s"</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">tempPath</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="c1">// 根据传入路径来打开内存写入需要的文件</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">ksfu_openBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">writeBuffer</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">writeBuffer</span><span class="p">)))</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">ksccd_freeze</span><span class="p">();</span>
+    <span class="c1">// json 解析的 c 代码</span>
+    <span class="n">KSJSONEncodeContext</span> <span class="n">jsonContext</span><span class="p">;</span>
+    <span class="n">jsonContext</span><span class="p">.</span><span class="n">userData</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">;</span>
+    <span class="n">KSCrashReportWriter</span> <span class="n">concreteWriter</span><span class="p">;</span>
+    <span class="n">KSCrashReportWriter</span><span class="o">*</span> <span class="n">writer</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">concreteWriter</span><span class="p">;</span>
+    <span class="n">prepareReportWriter</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">jsonContext</span><span class="p">);</span>
+
+    <span class="n">ksjson_beginEncode</span><span class="p">(</span><span class="n">getJsonContext</span><span class="p">(</span><span class="n">writer</span><span class="p">),</span> <span class="nb">true</span><span class="p">,</span> <span class="n">addJSONData</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">beginObject</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Report</span><span class="p">);</span>
+    <span class="p">{</span>
+        <span class="n">writeRecrash</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_RecrashReport</span><span class="p">,</span> <span class="n">tempPath</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">remove</span><span class="p">(</span><span class="n">tempPath</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">KSLOG_ERROR</span><span class="p">(</span><span class="s">"Could not remove %s: %s"</span><span class="p">,</span> <span class="n">tempPath</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+        <span class="p">}</span>
+        <span class="n">writeReportInfo</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span>
+                        <span class="n">KSCrashField_Report</span><span class="p">,</span>
+                        <span class="n">KSCrashReportType_Minimal</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">eventID</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">System</span><span class="p">.</span><span class="n">processName</span><span class="p">);</span>
+        <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+
+        <span class="n">writer</span><span class="o">-&gt;</span><span class="n">beginObject</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Crash</span><span class="p">);</span>
+        <span class="p">{</span>
+            <span class="n">writeError</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">KSCrashField_Error</span><span class="p">,</span> <span class="n">monitorContext</span><span class="p">);</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+            <span class="kt">int</span> <span class="n">threadIndex</span> <span class="o">=</span> <span class="n">ksmc_indexOfThread</span><span class="p">(</span><span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">offendingMachineContext</span><span class="p">,</span>
+                                                 <span class="n">ksmc_getThreadFromContext</span><span class="p">(</span><span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">offendingMachineContext</span><span class="p">));</span>
+            <span class="n">writeThread</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span>
+                        <span class="n">KSCrashField_CrashedThread</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="p">,</span>
+                        <span class="n">monitorContext</span><span class="o">-&gt;</span><span class="n">offendingMachineContext</span><span class="p">,</span>
+                        <span class="n">threadIndex</span><span class="p">,</span>
+                        <span class="nb">false</span><span class="p">);</span>
+            <span class="n">ksfu_flushBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">writer</span><span class="o">-&gt;</span><span class="n">endContainer</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="n">writer</span><span class="o">-&gt;</span><span class="n">endContainer</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+
+    <span class="n">ksjson_endEncode</span><span class="p">(</span><span class="n">getJsonContext</span><span class="p">(</span><span class="n">writer</span><span class="p">));</span>
+    <span class="n">ksfu_closeBufferedWriter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">bufferedWriter</span><span class="p">);</span>
+    <span class="n">ksccd_unfreeze</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h5 id="262-crash-日志的读取逻辑">2.6.2 Crash 日志的读取逻辑</h5>
+
+<p>当前 App 在 Crash 之后，KSCrash 将数据保存到 App 沙盒目录下，App 下次启动后我们读取存储的 crash 文件，然后处理数据并上传。</p>
+
+<p><strong>App 启动后函数调用：</strong></p>
+
+<p><code class="highlighter-rouge"> [KSCrashInstallation sendAllReportsWithCompletion:]</code> -&gt; <code class="highlighter-rouge">[KSCrash sendAllReportsWithCompletion:]</code> -&gt; <code class="highlighter-rouge">[KSCrash allReports]</code> -&gt; <code class="highlighter-rouge">[KSCrash reportWithIntID:]</code> -&gt;<code class="highlighter-rouge">[KSCrash loadCrashReportJSONWithID:]</code> -&gt; <code class="highlighter-rouge">kscrs_readReport </code></p>
+
+<p>在 <code class="highlighter-rouge">sendAllReportsWithCompletion</code> 里读取沙盒里的Crash 数据。</p>
+
+<pre><code class="language-objectivec">// 先通过读取文件夹，遍历文件夹内的文件数量来判断 crash 报告的个数
+static int getReportCount()
+{
+    int count = 0;
+    DIR* dir = opendir(g_reportsPath);
+    if(dir == NULL)
+    {
+        KSLOG_ERROR("Could not open directory %s", g_reportsPath);
+        goto done;
+    }
+    struct dirent* ent;
+    while((ent = readdir(dir)) != NULL)
+    {
+        if(getReportIDFromFilename(ent-&gt;d_name) &gt; 0)
+        {
+            count++;
+        }
+    }
+
+done:
+    if(dir != NULL)
+    {
+        closedir(dir);
+    }
+    return count;
+}
+
+// 通过 crash 文件个数、文件夹信息去遍历，一次获取到文件名（文件名的最后一部分就是 reportID），拿到 reportID 再去读取 crash 报告内的文件内容，写入数组
+- (NSArray*) allReports
+{
+    int reportCount = kscrash_getReportCount();
+    int64_t reportIDs[reportCount];
+    reportCount = kscrash_getReportIDs(reportIDs, reportCount);
+    NSMutableArray* reports = [NSMutableArray arrayWithCapacity:(NSUInteger)reportCount];
+    for(int i = 0; i &lt; reportCount; i++)
+    {
+        NSDictionary* report = [self reportWithIntID:reportIDs[i]];
+        if(report != nil)
+        {
+            [reports addObject:report];
+        }
+    }
+    
+    return reports;
+}
+
+//  根据 reportID 找到 crash 信息
+- (NSDictionary*) reportWithIntID:(int64_t) reportID
+{
+    NSData* jsonData = [self loadCrashReportJSONWithID:reportID];
+    if(jsonData == nil)
+    {
+        return nil;
+    }
+
+    NSError* error = nil;
+    NSMutableDictionary* crashReport = [KSJSONCodec decode:jsonData
+                                                   options:KSJSONDecodeOptionIgnoreNullInArray |
+                                                           KSJSONDecodeOptionIgnoreNullInObject |
+                                                           KSJSONDecodeOptionKeepPartialObject
+                                                     error:&amp;error];
+    if(error != nil)
+    {
+        KSLOG_ERROR(@"Encountered error loading crash report %" PRIx64 ": %@", reportID, error);
+    }
+    if(crashReport == nil)
+    {
+        KSLOG_ERROR(@"Could not load crash report");
+        return nil;
+    }
+    [self doctorReport:crashReport];
+
+    return crashReport;
+}
+
+//  reportID 读取 crash 内容并转换为 NSData 类型
+- (NSData*) loadCrashReportJSONWithID:(int64_t) reportID
+{
+    char* report = kscrash_readReport(reportID);
+    if(report != NULL)
+    {
+        return [NSData dataWithBytesNoCopy:report length:strlen(report) freeWhenDone:YES];
+    }
+    return nil;
+}
+
+// reportID 读取 crash 数据到 char 类型
+char* kscrash_readReport(int64_t reportID)
+{
+    if(reportID &lt;= 0)
+    {
+        KSLOG_ERROR("Report ID was %" PRIx64, reportID);
+        return NULL;
+    }
+
+    char* rawReport = kscrs_readReport(reportID);
+    if(rawReport == NULL)
+    {
+        KSLOG_ERROR("Failed to load report ID %" PRIx64, reportID);
+        return NULL;
+    }
+
+    char* fixedReport = kscrf_fixupCrashReport(rawReport);
+    if(fixedReport == NULL)
+    {
+        KSLOG_ERROR("Failed to fixup report ID %" PRIx64, reportID);
+    }
+
+    free(rawReport);
+    return fixedReport;
+}
+
+// 多线程加锁，通过 reportID 执行 c 函数 getCrashReportPathByID，将路径设置到 path 上。然后执行 ksfu_readEntireFile 读取 crash 信息到 result
+char* kscrs_readReport(int64_t reportID)
+{
+    pthread_mutex_lock(&amp;g_mutex);
+    char path[KSCRS_MAX_PATH_LENGTH];
+    getCrashReportPathByID(reportID, path);
+    char* result;
+    ksfu_readEntireFile(path, &amp;result, NULL, 2000000);
+    pthread_mutex_unlock(&amp;g_mutex);
+    return result;
+}
+
+int kscrash_getReportIDs(int64_t* reportIDs, int count)
+{
+    return kscrs_getReportIDs(reportIDs, count);
+}
+
+int kscrs_getReportIDs(int64_t* reportIDs, int count)
+{
+    pthread_mutex_lock(&amp;g_mutex);
+    count = getReportIDs(reportIDs, count);
+    pthread_mutex_unlock(&amp;g_mutex);
+    return count;
+}
+// 循环读取文件夹内容，根据 ent-&gt;d_name 调用 getReportIDFromFilename 函数，来获取 reportID，循环内部填充数组
+static int getReportIDs(int64_t* reportIDs, int count)
+{
+    int index = 0;
+    DIR* dir = opendir(g_reportsPath);
+    if(dir == NULL)
+    {
+        KSLOG_ERROR("Could not open directory %s", g_reportsPath);
+        goto done;
+    }
+
+    struct dirent* ent;
+    while((ent = readdir(dir)) != NULL &amp;&amp; index &lt; count)
+    {
+        int64_t reportID = getReportIDFromFilename(ent-&gt;d_name);
+        if(reportID &gt; 0)
+        {
+            reportIDs[index++] = reportID;
+        }
+    }
+
+    qsort(reportIDs, (unsigned)count, sizeof(reportIDs[0]), compareInt64);
+
+done:
+    if(dir != NULL)
+    {
+        closedir(dir);
+    }
+    return index;
+}
+
+// sprintf(参数1， 格式2) 函数将格式2的值返回到参数1上，然后执行 sscanf(参数1， 参数2， 参数3)，函数将字符串参数1的内容，按照参数2的格式，写入到参数3上。crash 文件命名为 "App名称-report-reportID.json"
+static int64_t getReportIDFromFilename(const char* filename)
+{
+    char scanFormat[100];
+    sprintf(scanFormat, "%s-report-%%" PRIx64 ".json", g_appName);
+    
+    int64_t reportID = 0;
+    sscanf(filename, scanFormat, &amp;reportID);
+    return reportID;
+}
+</code></pre>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095259863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h4 id="27-前端-js-相关的-crash-的监控">2.7 前端 js 相关的 Crash 的监控</h4>
+
+<h5 id="271-javascriptcore-异常监控">2.7.1 JavascriptCore 异常监控</h5>
+
+<p>这部分简单粗暴，直接通过  JSContext 对象的 exceptionHandler 属性来监控，比如下面的代码</p>
+
+<pre><code class="language-objectivec">jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+    // 处理 jscore 相关的异常信息    
+};
+</code></pre>
+
+<h5 id="272-h5-页面异常监控">2.7.2 h5 页面异常监控</h5>
+
+<p>当 h5 页面内的 Javascript 运行异常时会 window 对象会触发 <code class="highlighter-rouge">ErrorEvent</code> 接口的 error 事件，并执行 <code class="highlighter-rouge">window.onerror()</code>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">window</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">,</span> <span class="nx">url</span><span class="p">,</span> <span class="nx">lineNumber</span><span class="p">,</span> <span class="nx">columnNumber</span><span class="p">,</span> <span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// 处理异常信息</span>
+<span class="p">};</span>
+</code></pre></div></div>
+<p><img src="https://img-blog.csdnimg.cn/2020071409532821.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+<h5 id="273--react-native-异常监控">2.7.3  React Native 异常监控</h5>
+
+<p>小实验：下图是写了一个 RN Demo 工程，在 Debug Text 控件上加了事件监听代码，内部人为触发 crash</p>
+
+<div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">sectionTitle</span><span class="p">}</span> <span class="nx">onPress</span><span class="o">=</span><span class="p">{()</span><span class="o">=&gt;</span><span class="p">{</span><span class="mi">1</span><span class="o">+</span><span class="nx">qw</span><span class="p">;}}</span><span class="o">&gt;</span><span class="nx">Debug</span><span class="o">&lt;</span><span class="sr">/Text</span><span class="err">&gt;
+</span></code></pre></div></div>
+
+<p><strong>对比组1：</strong></p>
+
+<p>条件： iOS 项目 debug 模式。在 RN 端增加了异常处理的代码。</p>
+
+<p>模拟器点击 <code class="highlighter-rouge">command + d</code> 调出面板，选择 Debug，打开 Chrome 浏览器， Mac 下快捷键 <code class="highlighter-rouge">Command + Option + J</code> 打开调试面板，就可以像调试 React 一样调试 RN 代码了。
+<img src="https://img-blog.csdnimg.cn/20200714095355885.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>查看到 crash stack 后点击可以跳转到 sourceMap 的地方。</p>
+
+<p>Tips：RN 项目打 Release 包</p>
+
+<ul>
+  <li>
+    <p>在项目根目录下创建文件夹（ release_iOS），作为资源的输出文件夹</p>
+  </li>
+  <li>
+    <p>在终端切换到工程目录，然后执行下面的代码</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>react-native bundle <span class="nt">--entry-file</span> index.js <span class="nt">--platform</span> ios <span class="nt">--dev</span> <span class="nb">false</span> <span class="nt">--bundle-output</span> release_ios/main.jsbundle <span class="nt">--assets-dest</span> release_iOS <span class="nt">--sourcemap-output</span> release_ios/index.ios.map<span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>将  release_iOS 文件夹内的  <code class="highlighter-rouge">.jsbundle</code> 和 <code class="highlighter-rouge">assets</code> 文件夹内容拖入到 iOS  工程中即可</p>
+  </li>
+</ul>
+
+<p><strong>对比组2：</strong></p>
+
+<p>条件：iOS 项目 release 模式。在 RN 端不增加异常处理代码</p>
+
+<p>操作：运行 iOS 工程，点击按钮模拟 crash</p>
+
+<p>现象：iOS 项目奔溃。截图以及日志如下：</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095427349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>2020-06-22 22:26:03.318 <span class="o">[</span>info][tid:main][RCTRootView.m:294] Running application todos <span class="o">({</span>
+    initialProps <span class="o">=</span>     <span class="o">{</span>
+    <span class="o">}</span><span class="p">;</span>
+    rootTag <span class="o">=</span> 1<span class="p">;</span>
+<span class="o">})</span>
+2020-06-22 22:26:03.490 <span class="o">[</span>info][tid:com.facebook.react.JavaScript] Running <span class="s2">"todos"</span> with <span class="o">{</span><span class="s2">"rootTag"</span>:1,<span class="s2">"initialProps"</span>:<span class="o">{}}</span>
+2020-06-22 22:27:38.673 <span class="o">[</span>error][tid:com.facebook.react.JavaScript] ReferenceError: Can<span class="s1">'t find variable: qw
+2020-06-22 22:27:38.675 [fatal][tid:com.facebook.react.ExceptionsManagerQueue] Unhandled JS Exception: ReferenceError: Can'</span>t find variable: qw
+2020-06-22 22:27:38.691300+0800 todos[16790:314161] <span class="k">***</span> Terminating app due to uncaught exception <span class="s1">'RCTFatalException: Unhandled JS Exception: ReferenceError: Can'</span>t find variable: qw<span class="s1">', reason: '</span>Unhandled JS Exception: ReferenceError: Can<span class="s1">'t find variable: qw, stack:
+onPress@397:1821
+&lt;unknown&gt;@203:3896
+_performSideEffectsForTransition@210:9689
+_performSideEffectsForTransition@(null):(null)
+_receiveSignal@210:8425
+_receiveSignal@(null):(null)
+touchableHandleResponderRelease@210:5671
+touchableHandleResponderRelease@(null):(null)
+onResponderRelease@203:3006
+b@97:1125
+S@97:1268
+w@97:1322
+R@97:1617
+M@97:2401
+forEach@(null):(null)
+U@97:2201
+&lt;unknown&gt;@97:13818
+Pe@97:90199
+Re@97:13478
+Ie@97:13664
+receiveTouches@97:14448
+value@27:3544
+&lt;unknown&gt;@27:840
+value@27:2798
+value@27:812
+value@(null):(null)
+'</span>
+<span class="k">***</span> First throw call stack:
+<span class="o">(</span>
+	0   CoreFoundation                      0x00007fff23e3cf0e __exceptionPreprocess + 350
+	1   libobjc.A.dylib                     0x00007fff50ba89b2 objc_exception_throw + 48
+	2   todos                               0x00000001017b0510 RCTFormatError + 0
+	3   todos                               0x000000010182d8ca -[RCTExceptionsManager reportFatal:stack:exceptionId:suppressRedBox:] + 503
+	4   todos                               0x000000010182e34e -[RCTExceptionsManager reportException:] + 1658
+	5   CoreFoundation                      0x00007fff23e43e8c __invoking___ + 140
+	6   CoreFoundation                      0x00007fff23e41071 -[NSInvocation invoke] + 321
+	7   CoreFoundation                      0x00007fff23e41344 -[NSInvocation invokeWithTarget:] + 68
+	8   todos                               0x00000001017e07fa -[RCTModuleMethod invokeWithBridge:module:arguments:] + 578
+	9   todos                               0x00000001017e2a84 _ZN8facebook5reactL11invokeInnerEP9RCTBridgeP13RCTModuleDatajRKN5folly7dynamicE + 246
+	10  todos                               0x00000001017e280c ___ZN8facebook5react15RCTNativeModule6invokeEjON5folly7dynamicEi_block_invoke + 78
+	11  libdispatch.dylib                   0x00000001025b5f11 _dispatch_call_block_and_release + 12
+	12  libdispatch.dylib                   0x00000001025b6e8e _dispatch_client_callout + 8
+	13  libdispatch.dylib                   0x00000001025bd6fd _dispatch_lane_serial_drain + 788
+	14  libdispatch.dylib                   0x00000001025be28f _dispatch_lane_invoke + 422
+	15  libdispatch.dylib                   0x00000001025c9b65 _dispatch_workloop_worker_thread + 719
+	16  libsystem_pthread.dylib             0x00007fff51c08a3d _pthread_wqthread + 290
+	17  libsystem_pthread.dylib             0x00007fff51c07b77 start_wqthread + 15
+<span class="o">)</span>
+libc++abi.dylib: terminating with uncaught exception of <span class="nb">type </span>NSException
+<span class="o">(</span>lldb<span class="o">)</span> 
+</code></pre></div></div>
+
+<p>Tips：如何在 RN release 模式下调试（看到  js 侧的 console 信息）</p>
+
+<ul>
+  <li>在 <code class="highlighter-rouge">AppDelegate.m</code> 中引入 <code class="highlighter-rouge">#import &lt;React/RCTLog.h&gt;</code></li>
+  <li>在  <code class="highlighter-rouge">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</code> 中加入 <code class="highlighter-rouge">RCTSetLogThreshold(RCTLogLevelTrace);</code></li>
+</ul>
+
+<p><strong>对比组3：</strong></p>
+
+<p>条件：iOS 项目 release 模式。在 RN 端增加异常处理代码。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">global</span><span class="p">.</span><span class="nx">ErrorUtils</span><span class="p">.</span><span class="nx">setGlobalHandler</span><span class="p">((</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+  <span class="kd">let</span> <span class="nx">message</span> <span class="o">=</span> <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+                <span class="na">message</span><span class="p">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span>
+                <span class="na">stack</span><span class="p">:</span> <span class="nx">e</span><span class="p">.</span><span class="nx">stack</span>
+  <span class="p">};</span>
+  <span class="nx">axios</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'http://192.168.1.100:8888/test.php'</span><span class="p">,</span> <span class="p">{</span>
+  	<span class="na">params</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'message'</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">message</span><span class="p">)</span> <span class="p">}</span>
+  <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+  		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span>
+  <span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+  <span class="p">});</span>
+<span class="p">},</span> <span class="kc">true</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>操作：运行 iOS 工程，点击按钮模拟 crash。</p>
+
+<p>现象：iOS 项目不奔溃。日志信息如下，对比 bundle 包中的 js。
+<img src="https://img-blog.csdnimg.cn/2020071409545731.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" />
+结论：</p>
+
+<p>在 RN 项目中，如果发生了 crash 则会在 Native 侧有相应体现。如果 RN 侧写了 crash 捕获的代码，则 Native 侧不会奔溃。如果 RN 侧的 crash 没有捕获，则 Native 直接奔溃。</p>
+
+<p>RN 项目写了 crash 监控，监控后将堆栈信息打印出来发现对应的 js 信息是经过 webpack 处理的，crash 分析难度很大。所以我们针对 RN 的 crash 需要在 RN 侧写监控代码，监控后需要上报，此外针对监控后的信息需要写专门的 crash 信息还原给你，也就是 sourceMap 解析。</p>
+
+<h6 id="2731-js-逻辑错误">2.7.3.1 js 逻辑错误</h6>
+
+<p>写过 RN 的人都知道在 DEBUG 模式下 js 代码有问题则会产生红屏，在 RELEASE 模式下则会白屏或者闪退，为了体验和质量把控需要做异常监控。</p>
+
+<p>在看 RN 源码时候发现了 <code class="highlighter-rouge">ErrorUtils</code>，看代码可以设置处理错误信息。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow strict
+ * @polyfill
+ */</span>
+
+<span class="kd">let</span> <span class="nx">_inGuard</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="nx">type</span> <span class="nx">ErrorHandler</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">:</span> <span class="nx">mixed</span><span class="p">,</span> <span class="nx">isFatal</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+<span class="nx">type</span> <span class="nx">Fn</span><span class="o">&lt;</span><span class="nx">Args</span><span class="p">,</span> <span class="nx">Return</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">(...</span><span class="nx">Args</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Return</span><span class="p">;</span>
+
+<span class="cm">/**
+ * This is the error handler that is called when we encounter an exception
+ * when loading a module. This will report any errors encountered before
+ * ExceptionsManager is configured.
+ */</span>
+<span class="kd">let</span> <span class="nx">_globalHandler</span><span class="p">:</span> <span class="nx">ErrorHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">onError</span><span class="p">(</span>
+  <span class="nx">e</span><span class="p">:</span> <span class="nx">mixed</span><span class="p">,</span>
+  <span class="nx">isFatal</span><span class="p">:</span> <span class="kr">boolean</span><span class="p">,</span>
+<span class="p">)</span> <span class="p">{</span>
+  <span class="k">throw</span> <span class="nx">e</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**
+ * The particular require runtime that we are using looks for a global
+ * `ErrorUtils` object and if it exists, then it requires modules with the
+ * error handler specified via ErrorUtils.setGlobalHandler by calling the
+ * require function with applyWithGuard. Since the require module is loaded
+ * before any of the modules, this ErrorUtils must be defined (and the handler
+ * set) globally before requiring anything.
+ */</span>
+<span class="kd">const</span> <span class="nx">ErrorUtils</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">setGlobalHandler</span><span class="p">(</span><span class="na">fun</span><span class="p">:</span> <span class="nx">ErrorHandler</span><span class="p">):</span> <span class="k">void</span> <span class="p">{</span>
+    <span class="nx">_globalHandler</span> <span class="o">=</span> <span class="nx">fun</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">getGlobalHandler</span><span class="p">():</span> <span class="nx">ErrorHandler</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">_globalHandler</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">reportError</span><span class="p">(</span><span class="na">error</span><span class="p">:</span> <span class="nx">mixed</span><span class="p">):</span> <span class="k">void</span> <span class="p">{</span>
+    <span class="nx">_globalHandler</span> <span class="o">&amp;&amp;</span> <span class="nx">_globalHandler</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">reportFatalError</span><span class="p">(</span><span class="na">error</span><span class="p">:</span> <span class="nx">mixed</span><span class="p">):</span> <span class="k">void</span> <span class="p">{</span>
+    <span class="c1">// NOTE: This has an untyped call site in Metro.</span>
+    <span class="nx">_globalHandler</span> <span class="o">&amp;&amp;</span> <span class="nx">_globalHandler</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">applyWithGuard</span><span class="o">&lt;</span><span class="na">TArgs</span><span class="p">:</span> <span class="nx">$ReadOnlyArray</span><span class="o">&lt;</span><span class="nx">mixed</span><span class="o">&gt;</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="na">fun</span><span class="p">:</span> <span class="nx">Fn</span><span class="o">&lt;</span><span class="nx">TArgs</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nx">context</span><span class="p">?:</span> <span class="p">?</span><span class="nx">mixed</span><span class="p">,</span>
+    <span class="nx">args</span><span class="p">?:</span> <span class="p">?</span><span class="nx">TArgs</span><span class="p">,</span>
+    <span class="c1">// Unused, but some code synced from www sets it to null.</span>
+    <span class="nx">unused_onError</span><span class="p">?:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="c1">// Some callers pass a name here, which we ignore.</span>
+    <span class="nx">unused_name</span><span class="p">?:</span> <span class="p">?</span><span class="nx">string</span><span class="p">,</span>
+  <span class="p">):</span> <span class="p">?</span><span class="nx">TOut</span> <span class="p">{</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="nx">_inGuard</span><span class="o">++</span><span class="p">;</span>
+      <span class="c1">// $FlowFixMe: TODO T48204745 (1) apply(context, null) is fine. (2) array -&gt; rest array should work</span>
+      <span class="k">return</span> <span class="nx">fun</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">ErrorUtils</span><span class="p">.</span><span class="nx">reportError</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+      <span class="nx">_inGuard</span><span class="o">--</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">applyWithGuardIfNeeded</span><span class="o">&lt;</span><span class="na">TArgs</span><span class="p">:</span> <span class="nx">$ReadOnlyArray</span><span class="o">&lt;</span><span class="nx">mixed</span><span class="o">&gt;</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="na">fun</span><span class="p">:</span> <span class="nx">Fn</span><span class="o">&lt;</span><span class="nx">TArgs</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nx">context</span><span class="p">?:</span> <span class="p">?</span><span class="nx">mixed</span><span class="p">,</span>
+    <span class="nx">args</span><span class="p">?:</span> <span class="p">?</span><span class="nx">TArgs</span><span class="p">,</span>
+  <span class="p">):</span> <span class="p">?</span><span class="nx">TOut</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">ErrorUtils</span><span class="p">.</span><span class="nx">inGuard</span><span class="p">())</span> <span class="p">{</span>
+      <span class="c1">// $FlowFixMe: TODO T48204745 (1) apply(context, null) is fine. (2) array -&gt; rest array should work</span>
+      <span class="k">return</span> <span class="nx">fun</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">ErrorUtils</span><span class="p">.</span><span class="nx">applyWithGuard</span><span class="p">(</span><span class="nx">fun</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">inGuard</span><span class="p">():</span> <span class="kr">boolean</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="o">!!</span><span class="nx">_inGuard</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">guard</span><span class="o">&lt;</span><span class="na">TArgs</span><span class="p">:</span> <span class="nx">$ReadOnlyArray</span><span class="o">&lt;</span><span class="nx">mixed</span><span class="o">&gt;</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">(</span>
+    <span class="na">fun</span><span class="p">:</span> <span class="nx">Fn</span><span class="o">&lt;</span><span class="nx">TArgs</span><span class="p">,</span> <span class="nx">TOut</span><span class="o">&gt;</span><span class="p">,</span>
+    <span class="nx">name</span><span class="p">?:</span> <span class="p">?</span><span class="nx">string</span><span class="p">,</span>
+    <span class="nx">context</span><span class="p">?:</span> <span class="p">?</span><span class="nx">mixed</span><span class="p">,</span>
+  <span class="p">):</span> <span class="p">?(...</span><span class="nx">TArgs</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">?</span><span class="nx">TOut</span> <span class="p">{</span>
+    <span class="c1">// TODO: (moti) T48204753 Make sure this warning is never hit and remove it - types</span>
+    <span class="c1">// should be sufficient.</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">fun</span> <span class="o">!==</span> <span class="s1">'function'</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">warn</span><span class="p">(</span><span class="s1">'A function must be passed to ErrorUtils.guard, got '</span><span class="p">,</span> <span class="nx">fun</span><span class="p">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">guardName</span> <span class="o">=</span> <span class="nx">name</span> <span class="p">??</span> <span class="nx">fun</span><span class="p">.</span><span class="nx">name</span> <span class="p">??</span> <span class="s1">'&lt;generated guard&gt;'</span><span class="p">;</span>
+    <span class="kd">function</span> <span class="nx">guarded</span><span class="p">(...</span><span class="nx">args</span><span class="p">:</span> <span class="nx">TArgs</span><span class="p">):</span> <span class="p">?</span><span class="nx">TOut</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">ErrorUtils</span><span class="p">.</span><span class="nx">applyWithGuard</span><span class="p">(</span>
+        <span class="nx">fun</span><span class="p">,</span>
+        <span class="nx">context</span> <span class="p">??</span> <span class="k">this</span><span class="p">,</span>
+        <span class="nx">args</span><span class="p">,</span>
+        <span class="kc">null</span><span class="p">,</span>
+        <span class="nx">guardName</span><span class="p">,</span>
+      <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">guarded</span><span class="p">;</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="nb">global</span><span class="p">.</span><span class="nx">ErrorUtils</span> <span class="o">=</span> <span class="nx">ErrorUtils</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="nx">type</span> <span class="nx">ErrorUtilsT</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">ErrorUtils</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>所以 RN 的异常可以使用 <code class="highlighter-rouge">global.ErrorUtils</code> 来设置错误处理。举个例子：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>global.ErrorUtils.setGlobalHandler(e =&gt; {
+   // e.name e.message e.stack
+}, true);
+</code></pre></div></div>
+
+<h6 id="2732-组件问题">2.7.3.2 组件问题</h6>
+
+<p>其实对于 RN 的 crash 处理还有个需要注意的就是  <strong>React Error Boundaries</strong>。<a href="https://zh-hans.reactjs.org/docs/error-boundaries.html">详细资料</a></p>
+
+<blockquote>
+  <p>过去，组件内的 JavaScript 错误会导致 React 的内部状态被破坏，并且在下一次渲染时 <a href="https://github.com/facebook/react/issues/4026">产生</a> <a href="https://github.com/facebook/react/issues/6895">可能无法追踪的</a> <a href="https://github.com/facebook/react/issues/8579">错误</a>。这些错误基本上是由较早的其他代码（非 React 组件代码）错误引起的，但 React 并没有提供一种在组件中优雅处理这些错误的方式，也无法从错误中恢复。</p>
+
+  <p>部分 UI 的 JavaScript 错误不应该导致整个应用崩溃，为了解决这个问题，React 16 引入了一个新的概念 —— 错误边界。</p>
+
+  <p>错误边界是一种 React 组件，这种组件<strong>可以捕获并打印发生在其子组件树任何位置的 JavaScript 错误，并且，它会渲染出备用 UI</strong>，而不是渲染那些崩溃了的子组件树。错误边界在渲染期间、生命周期方法和整个组件树的构造函数中捕获错误。</p>
+</blockquote>
+
+<p>它能捕获子组件生命周期函数中的异常，包括构造函数（constructor）和 render 函数</p>
+
+<p>而不能捕获以下异常：</p>
+
+<ul>
+  <li>Event handlers（事件处理函数）</li>
+  <li>Asynchronous code（异步代码，如setTimeout、promise等）</li>
+  <li>Server side rendering（服务端渲染）</li>
+  <li>Errors thrown in the error boundary itself (rather than its children)（异常边界组件本身抛出的异常）</li>
+</ul>
+
+<p>所以可以通过异常边界组件捕获组件生命周期内的所有异常然后渲染兜底组件 ，防止 App crash，提高用户体验。也可引导用户反馈问题，方便问题的排查和修复</p>
+
+<p>至此 RN 的 crash 分为2种，分别是 js 逻辑错误、组件 js 错误，都已经被监控处理了。接下来就看看如何从工程化层面解决这些问题</p>
+
+<h5 id="274-rn-crash-还原">2.7.4 RN Crash 还原</h5>
+
+<p>SourceMap 文件对于前端日志的解析至关重要，SourceMap 文件中各个参数和如何计算的步骤都在里面有写，可以查看<a href="https://github.com/FantasticLBP/knowledge-kit/blob/master/Chapter2%20-%20Web%20FrontEnd/2.41.md">这篇文章</a>。</p>
+
+<p>有了 SourceMap 文件，借助于 <a href="https://github.com/mozilla">mozilla </a> 的 <a href="https://github.com/mozilla/source-map">source-map</a> 项目，可以很好的还原 RN 的 crash 日志。</p>
+
+<p>我写了个 NodeJS 脚本，代码如下</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">sourceMap</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'source-map'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="kr">arguments</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">parseJSError</span><span class="p">(</span><span class="nx">aLine</span><span class="p">,</span> <span class="nx">aColumn</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nx">readFile</span><span class="p">(</span><span class="s1">'./index.ios.map'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">whatever</span> <span class="o">=</span>  <span class="nx">sourceMap</span><span class="p">.</span><span class="nx">SourceMapConsumer</span><span class="p">.</span><span class="kd">with</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">consumer</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// 读取 crash 日志的行号、列号</span>
+            <span class="kd">let</span> <span class="nx">parseData</span> <span class="o">=</span> <span class="nx">consumer</span><span class="p">.</span><span class="nx">originalPositionFor</span><span class="p">({</span>
+                <span class="na">line</span><span class="p">:</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">aLine</span><span class="p">),</span>
+                <span class="na">column</span><span class="p">:</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">aColumn</span><span class="p">)</span>
+            <span class="p">});</span>
+            <span class="c1">// 输出到控制台</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">parseData</span><span class="p">);</span>
+            <span class="c1">// 输出到文件中</span>
+            <span class="nx">fs</span><span class="p">.</span><span class="nx">writeFileSync</span><span class="p">(</span><span class="s1">'./parsed.txt'</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">parseData</span><span class="p">)</span> <span class="o">+</span> <span class="s1">'</span><span class="err">\</span><span class="s1">n'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>  
+                <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>  
+                    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">});</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">line</span> <span class="o">=</span> <span class="kr">arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="kd">var</span> <span class="nx">column</span> <span class="o">=</span> <span class="kr">arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="nx">parseJSError</span><span class="p">(</span><span class="nx">line</span><span class="p">,</span> <span class="nx">column</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>接下来做个实验，还是上述的 todos 项目。</p>
+
+<ol>
+  <li>
+    <p>在 Text 的点击事件上模拟 crash</p>
+
+    <div class="language-jsx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="nx">Text</span> <span class="nx">style</span><span class="o">=</span><span class="p">{</span><span class="nx">styles</span><span class="p">.</span><span class="nx">sectionTitle</span><span class="p">}</span> <span class="nx">onPress</span><span class="o">=</span><span class="p">{()</span><span class="o">=&gt;</span><span class="p">{</span><span class="mi">1</span><span class="o">+</span><span class="nx">qw</span><span class="p">;}}</span><span class="o">&gt;</span><span class="nx">Debug</span><span class="o">&lt;</span><span class="sr">/Text</span><span class="err">&gt;
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>将 RN 项目打 bundle 包、产出 sourceMap 文件。执行命令,</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>react-native bundle <span class="nt">--entry-file</span> index.js <span class="nt">--platform</span> android <span class="nt">--dev</span> <span class="nb">false</span> <span class="nt">--bundle-output</span> release_ios/main.jsbundle <span class="nt">--assets-dest</span> release_iOS <span class="nt">--sourcemap-output</span> release_ios/index.android.map<span class="p">;</span>
+</code></pre></div>    </div>
+
+    <p>因为高频使用，所以给 iterm2 增加 alias 别名设置，修改 <code class="highlighter-rouge">.zshrc</code> 文件</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">alias </span><span class="nv">RNRelease</span><span class="o">=</span><span class="s1">'react-native bundle --entry-file index.js --platform ios --dev false --bundle-output release_ios/main.jsbundle --assets-dest release_iOS --sourcemap-output release_ios/index.ios.map;'</span> <span class="c"># RN 打 Release 包</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>将 js bundle 和图片资源拷贝到 Xcode 工程中</p>
+  </li>
+  <li>
+    <p>点击模拟 crash，将日志下面的行号和列号拷贝，在 Node 项目下，执行下面命令</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>node index.js 397 1822
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>拿脚本解析好的行号、列号、文件信息去和源代码文件比较，结果很正确。</p>
+  </li>
+</ol>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095530451.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h5 id="275-sourcemap-解析系统设计">2.7.5 SourceMap 解析系统设计</h5>
+
+<p>目的：通过平台可以将 RN 项目线上 crash 可以还原到具体的文件、代码行数、代码列数。可以看到具体的代码，可以看到 RN stack trace、提供源文件下载功能。</p>
+
+<ol>
+  <li>打包系统下管理的服务器：
+    <ul>
+      <li>生产环境下打包才生成 source map 文件</li>
+      <li>存储打包前的所有文件（install）</li>
+    </ul>
+  </li>
+  <li>开发产品侧 RN 分析界面。点击收集到的 RN crash，在详情页可以看到具体的文件、代码行数、代码列数。可以看到具体的代码，可以看到 RN stack trace、Native stack trace。（具体技术实现上面讲过了）</li>
+  <li>由于 souece map 文件较大，RN 解析过长虽然不久，但是是对计算资源的消耗，所以需要设计高效读取方式</li>
+  <li>SourceMap 在 iOS、Android 模式下不一样，所以 SoureceMap 存储需要区分 os。</li>
+</ol>
+
+<h3 id="3-kscrash-的使用包装">3. KSCrash 的使用包装</h3>
+
+<p>然后再封装自己的 Crash 处理逻辑。比如要做的事情就是：</p>
+
+<ul>
+  <li>
+    <p>继承自 KSCrashInstallation 这个抽象类，设置初始化工作（抽象类比如 NSURLProtocol 必须继承后使用），实现抽象类中的 <code class="highlighter-rouge">sink</code> 方法。</p>
+
+    <div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Crash system installation which handles backend-specific details.
+ *
+ * Only one installation can be installed at a time.
+ *
+ * This is an abstract class.
+ */</span>
+<span class="err">@</span><span class="n">interface</span> <span class="n">KSCrashInstallation</span> <span class="o">:</span> <span class="n">NSObject</span>
+</code></pre></div>    </div>
+
+    <pre><code class="language-objectivec">#import "CMCrashInstallation.h"
+#import &lt;KSCrash/KSCrashInstallation+Private.h&gt;
+#import "CMCrashReporterSink.h"
+  
+@implementation CMCrashInstallation
+  
++ (instancetype)sharedInstance {
+    static CMCrashInstallation *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        sharedInstance = [[CMCrashInstallation alloc] init];
+    });
+    return sharedInstance;
+}
+  
+- (id)init {
+    return [super initWithRequiredProperties: nil];
+}
+  
+- (id&lt;KSCrashReportFilter&gt;)sink {
+    CMCrashReporterSink *sink = [[CMCrashReporterSink alloc] init];
+    return [sink defaultCrashReportFilterSetAppleFmt];
+}
+  
+@end
+</code></pre>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">sink</code> 方法内部的 <code class="highlighter-rouge">CMCrashReporterSink</code> 类，遵循了 <strong>KSCrashReportFilter</strong> 协议，声明了公有方法 <code class="highlighter-rouge">defaultCrashReportFilterSetAppleFmt</code></p>
+
+    <pre><code class="language-objectivec">// .h
+#import &lt;Foundation/Foundation.h&gt;
+#import &lt;KSCrash/KSCrashReportFilter.h&gt;
+  
+@interface CMCrashReporterSink : NSObject&lt;KSCrashReportFilter&gt;
+  
+- (id &lt;KSCrashReportFilter&gt;) defaultCrashReportFilterSetAppleFmt;
+  
+@end
+  
+// .m
+#pragma mark - public Method
+  
+- (id &lt;KSCrashReportFilter&gt;) defaultCrashReportFilterSetAppleFmt
+{
+    return [KSCrashReportFilterPipeline filterWithFilters:
+            [CMCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicatedSideBySide],
+            self,
+            nil];
+}
+</code></pre>
+
+    <p>其中 <code class="highlighter-rouge">defaultCrashReportFilterSetAppleFmt</code> 方法内部返回了一个 <code class="highlighter-rouge">KSCrashReportFilterPipeline</code> 类方法 <code class="highlighter-rouge">filterWithFilters</code> 的结果。</p>
+
+    <p><code class="highlighter-rouge">CMCrashReportFilterAppleFmt</code>  是一个继承自 <code class="highlighter-rouge">KSCrashReportFilterAppleFmt</code> 的类，遵循了 <code class="highlighter-rouge">KSCrashReportFilter</code> 协议。协议方法允许开发者处理 Crash 的数据格式。</p>
+
+    <pre><code class="language-objectivec">/** Filter the specified reports.
+ *
+ * @param reports The reports to process.
+ * @param onCompletion Block to call when processing is complete.
+ */
+- (void) filterReports:(NSArray*) reports
+          onCompletion:(KSCrashReportFilterCompletion) onCompletion;
+</code></pre>
+
+    <pre><code class="language-objectivec">#import &lt;KSCrash/KSCrashReportFilterAppleFmt.h&gt;
+  
+@interface CMCrashReportFilterAppleFmt : KSCrashReportFilterAppleFmt&lt;KSCrashReportFilter&gt;
+  
+@end
+    
+// .m
+- (void) filterReports:(NSArray*)reports onCompletion:(KSCrashReportFilterCompletion)onCompletion
+  {
+    NSMutableArray* filteredReports = [NSMutableArray arrayWithCapacity:[reports count]];
+    for(NSDictionary *report in reports){
+      if([self majorVersion:report] == kExpectedMajorVersion){
+        id monitorInfo = [self generateMonitorInfoFromCrashReport:report];
+        if(monitorInfo != nil){
+          [filteredReports addObject:monitorInfo];
+        }
+      }
+    }
+    kscrash_callCompletion(onCompletion, filteredReports, YES, nil);
+}
+  
+/**
+ @brief 获取Crash JSON中的crash时间、mach name、signal name和apple report
+ */
+- (NSDictionary *)generateMonitorInfoFromCrashReport:(NSDictionary *)crashReport
+{
+    NSDictionary *infoReport = [crashReport objectForKey:@"report"];
+    // ...
+    id appleReport = [self toAppleFormat:crashReport];
+      
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    [info setValue:crashTime forKey:@"crashTime"];
+    [info setValue:appleReport forKey:@"appleReport"];
+    [info setValue:userException forKey:@"userException"];
+    [info setValue:userInfo forKey:@"custom"];
+      
+    return [info copy];
+}
+</code></pre>
+
+    <pre><code class="language-objectivec">/**
+ * A pipeline of filters. Reports get passed through each subfilter in order.
+ *
+ * Input: Depends on what's in the pipeline.
+ * Output: Depends on what's in the pipeline.
+ */
+@interface KSCrashReportFilterPipeline : NSObject &lt;KSCrashReportFilter&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>APM 能力中为 Crash 模块设置一个启动器。启动器内部设置 KSCrash 的初始化工作，以及触发 Crash 时候监控所需数据的组装。比如：SESSION_ID、App 启动时间、App 名称、崩溃时间、App 版本号、当前页面信息等基础信息。</p>
+
+    <pre><code class="language-objectivec">/** C Function to call during a crash report to give the callee an opportunity to
+ * add to the report. NULL = ignore.
+ *
+ * WARNING: Only call async-safe functions from this function! DO NOT call
+ * Objective-C methods!!!
+ */
+@property(atomic,readwrite,assign) KSReportWriteCallback onCrash;
+</code></pre>
+
+    <pre><code class="language-objectivec">+ (instancetype)sharedInstance
+{
+    static CMCrashMonitor *_sharedManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        _sharedManager = [[CMCrashMonitor alloc] init];
+    });
+    return _sharedManager;
+}
+  
+  
+#pragma mark - public Method
+  
+- (void)startMonitor
+{
+    CMMLog(@"crash monitor started");
+  
+#ifdef DEBUG
+    BOOL _trackingCrashOnDebug = [CMMonitorConfig sharedInstance].trackingCrashOnDebug;
+    if (_trackingCrashOnDebug) {
+        [self installKSCrash];
+    }
+#else
+    [self installKSCrash];
+#endif
+}
+  
+#pragma mark - private method
+  
+static void onCrash(const KSCrashReportWriter* writer)
+{
+    NSString *sessionId = [NSString stringWithFormat:@"\"%@\"", ***]];
+    writer-&gt;addJSONElement(writer, "SESSION_ID", [sessionId UTF8String], true);
+      
+    NSString *appLaunchTime = ***;
+    writer-&gt;addJSONElement(writer, "USER_APP_START_DATE", [[NSString stringWithFormat:@"\"%@\"", appLaunchTime] UTF8String], true);
+    // ...
+}
+  
+- (void)installKSCrash
+{
+    [[CMCrashInstallation sharedInstance] install];
+    [[CMCrashInstallation sharedInstance] sendAllReportsWithCompletion:nil];
+    [CMCrashInstallation sharedInstance].onCrash = onCrash;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _isCanAddCrashCount = NO;
+    });
+}
+</code></pre>
+
+    <p>在 <code class="highlighter-rouge">installKSCrash</code> 方法中调用了 <code class="highlighter-rouge">[[CMCrashInstallation sharedInstance] sendAllReportsWithCompletion: nil]</code>，内部实现如下</p>
+
+    <pre><code class="language-objectivec">- (void) sendAllReportsWithCompletion:(KSCrashReportFilterCompletion) onCompletion
+{
+    NSError* error = [self validateProperties];
+    if(error != nil)
+    {
+        if(onCompletion != nil)
+        {
+            onCompletion(nil, NO, error);
+        }
+        return;
+    }
+  
+    id&lt;KSCrashReportFilter&gt; sink = [self sink];
+    if(sink == nil)
+    {
+        onCompletion(nil, NO, [NSError errorWithDomain:[[self class] description]
+                                                  code:0
+                                           description:@"Sink was nil (subclasses must implement method \"sink\")"]);
+        return;
+    }
+      
+    sink = [KSCrashReportFilterPipeline filterWithFilters:self.prependedFilters, sink, nil];
+  
+    KSCrash* handler = [KSCrash sharedInstance];
+    handler.sink = sink;
+    [handler sendAllReportsWithCompletion:onCompletion];
+}
+</code></pre>
+
+    <p>方法内部将 <code class="highlighter-rouge">KSCrashInstallation</code> 的 <code class="highlighter-rouge">sink</code> 赋值给 <code class="highlighter-rouge">KSCrash</code> 对象。 内部还是调用了 <code class="highlighter-rouge">KSCrash</code> 的 <code class="highlighter-rouge">sendAllReportsWithCompletion</code> 方法，实现如下</p>
+
+    <pre><code class="language-objectivec">- (void) sendAllReportsWithCompletion:(KSCrashReportFilterCompletion) onCompletion
+{
+    NSArray* reports = [self allReports];
+      
+    KSLOG_INFO(@"Sending %d crash reports", [reports count]);
+      
+    [self sendReports:reports
+         onCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
+     {
+         KSLOG_DEBUG(@"Process finished with completion: %d", completed);
+         if(error != nil)
+         {
+             KSLOG_ERROR(@"Failed to send reports: %@", error);
+         }
+         if((self.deleteBehaviorAfterSendAll == KSCDeleteOnSucess &amp;&amp; completed) ||
+            self.deleteBehaviorAfterSendAll == KSCDeleteAlways)
+         {
+             kscrash_deleteAllReports();
+         }
+         kscrash_callCompletion(onCompletion, filteredReports, completed, error);
+     }];
+}
+</code></pre>
+
+    <p>该方法内部调用了对象方法 <code class="highlighter-rouge">sendReports: onCompletion:</code>，如下所示</p>
+
+    <pre><code class="language-objectivec">- (void) sendReports:(NSArray*) reports onCompletion:(KSCrashReportFilterCompletion) onCompletion
+{
+    if([reports count] == 0)
+    {
+        kscrash_callCompletion(onCompletion, reports, YES, nil);
+        return;
+    }
+      
+    if(self.sink == nil)
+    {
+        kscrash_callCompletion(onCompletion, reports, NO,
+                                 [NSError errorWithDomain:[[self class] description]
+                                                     code:0
+                                              description:@"No sink set. Crash reports not sent."]);
+        return;
+    }
+      
+    [self.sink filterReports:reports
+                onCompletion:^(NSArray* filteredReports, BOOL completed, NSError* error)
+     {
+         kscrash_callCompletion(onCompletion, filteredReports, completed, error);
+     }];
+}
+</code></pre>
+
+    <p>方法内部的 <code class="highlighter-rouge">[self.sink filterReports: onCompletion: ]</code> 实现其实就是 <code class="highlighter-rouge">CMCrashInstallation</code> 中设置的 <code class="highlighter-rouge">sink</code> getter 方法，内部返回了 <code class="highlighter-rouge">CMCrashReporterSink</code> 对象的 <code class="highlighter-rouge">defaultCrashReportFilterSetAppleFmt</code> 方法的返回值。内部实现如下</p>
+
+    <pre><code class="language-objectivec">- (id &lt;KSCrashReportFilter&gt;) defaultCrashReportFilterSetAppleFmt
+{
+    return [KSCrashReportFilterPipeline filterWithFilters:
+            [CMCrashReportFilterAppleFmt filterWithReportStyle:KSAppleReportStyleSymbolicatedSideBySide],
+            self,
+            nil];
+}
+</code></pre>
+
+    <p>可以看到这个函数内部设置了多个 <strong>filters</strong>，其中一个就是 <strong>self</strong>，也就是 <code class="highlighter-rouge">CMCrashReporterSink</code> 对象，所以上面的 ` [self.sink filterReports: onCompletion:]<code class="highlighter-rouge"> ，也就是调用 </code>CMCrashReporterSink<code class="highlighter-rouge"> 内的数据处理方法。完了之后通过 </code>kscrash_callCompletion(onCompletion, reports, YES, nil);<code class="highlighter-rouge"> 告诉 </code>KSCrash` 本地保存的 Crash 日志已经处理完毕，可以删除了。</p>
+
+    <pre><code class="language-objectivec">- (void)filterReports:(NSArray *)reports onCompletion:(KSCrashReportFilterCompletion)onCompletion
+{
+    for (NSDictionary *report in reports) {
+        // 处理 Crash 数据，将数据交给统一的数据上报组件处理...
+    }
+    kscrash_callCompletion(onCompletion, reports, YES, nil);
+}
+</code></pre>
+
+    <p>至此，概括下 KSCrash 做的事情，提供各种 crash 的监控能力，在 crash 后将进程信息、基本信息、异常信息、线程信息等用 c 高效转换为 json 写入文件，App 下次启动后读取本地的 crash 文件夹中的 crash 日志，让开发者可以自定义 key、value 然后去上报日志到 APM 系统，然后删除本地 crash 文件夹中的日志。</p>
+  </li>
+</ul>
+
+<h3 id="4--符号化">4.  符号化</h3>
+
+<p>应用 crash 之后，系统会生成一份崩溃日志，存储在设置中，应用的运行状态、调用堆栈、所处线程等信息会记录在日志中。但是这些日志是地址，并不可读，所以需要进行符号化还原。</p>
+
+<h4 id="41--dsym-文件">4.1  .dSYM 文件<a name="dSYM"></a></h4>
+
+<p><code class="highlighter-rouge">.dSYM</code> （debugging symbol）文件是保存十六进制函数地址映射信息的中转文件，调试信息（symbols）都包含在该文件中。Xcode 工程每次编译运行都会生成新的 <code class="highlighter-rouge">.dSYM</code> 文件。默认情况下 debug 模式时不生成 <code class="highlighter-rouge">.dSYM</code> ，可以在 Build Settings -&gt; Build Options -&gt; Debug Information Format 后将值 <code class="highlighter-rouge">DWARF</code> 修改为 <code class="highlighter-rouge">DWARF with dSYM File</code>，这样再次编译运行就可以生成 <code class="highlighter-rouge">.dSYM</code> 文件。</p>
+
+<p>所以每次 App 打包的时候都需要保存每个版本的 <code class="highlighter-rouge">.dSYM</code> 文件。</p>
+
+<p><code class="highlighter-rouge">.dSYM</code> 文件中包含 DWARF 信息，打开文件的包内容 <code class="highlighter-rouge">Test.app.dSYM/Contents/Resources/DWARF/Test</code>  保存的就是 <code class="highlighter-rouge">DWARF</code> 文件。</p>
+
+<p><code class="highlighter-rouge">.dSYM</code> 文件是从 Mach-O 文件中抽取调试信息而得到的文件目录，发布的时候为了安全，会把调试信息存储在单独的文件，<code class="highlighter-rouge">.dSYM</code> 其实是一个文件目录，结构如下：</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095602729.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h4 id="42-dwarf-文件">4.2 DWARF 文件</h4>
+
+<blockquote>
+  <p>DWARF is a debugging file format used by many compilers and debuggers to support source level debugging. It addresses the requirements of a number of procedural languages, such as C, C++, and Fortran, and is designed to be extensible to other languages. DWARF is architecture independent and applicable to any processor or operating system. It is widely used on Unix, Linux and other operating systems, as well as in stand-alone environments.</p>
+</blockquote>
+
+<p><strong>DWARF 是一种调试文件格式，它被许多编译器和调试器所广泛使用以支持源代码级别的调试</strong>。它满足许多过程语言（C、C++、Fortran）的需求，它被设计为支持拓展到其他语言。DWARF 是架构独立的，适用于其他任何的处理器和操作系统。被广泛使用在 Unix、Linux 和其他的操作系统上，以及独立环境上。</p>
+
+<p>DWARF 全称是 Debugging With Arbitrary Record Formats，是一种使用属性化记录格式的调试文件。</p>
+
+<p>DWARF 是可执行程序与源代码关系的一个紧凑表示。</p>
+
+<p>大多数现代编程语言都是块结构：每个实体（一个类、一个函数）被包含在另一个实体中。一个 c 程序，每个文件可能包含多个数据定义、多个变量、多个函数，所以 DWARF 遵循这个模型，也是块结构。DWARF 里基本的描述项是调试信息项 DIE（Debugging Information Entry）。一个 DIE 有一个标签，表示这个 DIE 描述了什么以及一个填入了细节并进一步描述该项的属性列表（类比 html、xml 结构）。一个 DIE（除了最顶层的）被一个父 DIE 包含，可能存在兄弟 DIE 或者子 DIE，属性可能包含各种值：常量（比如一个函数名），变量（比如一个函数的起始地址），或对另一个DIE的引用（比如一个函数的返回值类型）。</p>
+
+<p>DWARF 文件中的数据如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>数据列</th>
+      <th>信息说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>.debug_loc</td>
+      <td>在 DW_AT_location 属性中使用的位置列表</td>
+    </tr>
+    <tr>
+      <td>.debug_macinfo</td>
+      <td>宏信息</td>
+    </tr>
+    <tr>
+      <td>.debug_pubnames</td>
+      <td>全局对象和函数的查找表</td>
+    </tr>
+    <tr>
+      <td>.debug_pubtypes</td>
+      <td>全局类型的查找表</td>
+    </tr>
+    <tr>
+      <td>.debug_ranges</td>
+      <td>在 DW_AT_ranges 属性中使用的地址范围</td>
+    </tr>
+    <tr>
+      <td>.debug_str</td>
+      <td>在 .debug_info 中使用的字符串表</td>
+    </tr>
+    <tr>
+      <td>.debug_types</td>
+      <td>类型描述</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>常用的标记与属性如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>数据列</th>
+      <th>信息说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DW_TAG_class_type</td>
+      <td>表示类名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_structure_type</td>
+      <td>表示结构名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_union_type</td>
+      <td>表示联合名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_enumeration_type</td>
+      <td>表示枚举名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_typedef</td>
+      <td>表示 typedef 的名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_array_type</td>
+      <td>表示数组名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_subrange_type</td>
+      <td>表示数组的大小信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_inheritance</td>
+      <td>表示继承的类名称和类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_member</td>
+      <td>表示类的成员</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_subprogram</td>
+      <td>表示函数的名称信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_formal_parameter</td>
+      <td>表示函数的参数信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_name</td>
+      <td>表示名称字符串</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_type</td>
+      <td>表示类型信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_artifical</td>
+      <td>在创建时由编译程序设置</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_sibling</td>
+      <td>表示兄弟位置信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_data_memver_location</td>
+      <td>表示位置信息</td>
+    </tr>
+    <tr>
+      <td>DW_TAG_virtuality</td>
+      <td>在虚拟时设置</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>简单看一个 DWARF 的例子：将测试工程的 <code class="highlighter-rouge">.dSYM</code>  文件夹下的 DWARF 文件用下面命令解析</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dwarfdump <span class="nt">-F</span> <span class="nt">--debug-info</span> Test.app.dSYM/Contents/Resources/DWARF/Test <span class="o">&gt;</span> debug-info.txt
+</code></pre></div></div>
+
+<p><strong>打开如下:</strong></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test.app.dSYM/Contents/Resources/DWARF/Test:	file format Mach-O arm64
+
+.debug_info contents:
+0x00000000: Compile Unit: length <span class="o">=</span> 0x0000004f version <span class="o">=</span> 0x0004 abbr_offset <span class="o">=</span> 0x0000 addr_size <span class="o">=</span> 0x08 <span class="o">(</span>next unit at 0x00000053<span class="o">)</span>
+
+0x0000000b: DW_TAG_compile_unit
+              DW_AT_producer <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"Apple clang version 11.0.3 (clang-1103.0.32.62)"</span><span class="o">)</span>
+              DW_AT_language <span class="o">[</span>DW_FORM_data2]	<span class="o">(</span>DW_LANG_ObjC<span class="o">)</span>
+              DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"_Builtin_stddef_max_align_t"</span><span class="o">)</span>
+              DW_AT_stmt_list <span class="o">[</span>DW_FORM_sec_offset]	<span class="o">(</span>0x00000000<span class="o">)</span>
+              DW_AT_comp_dir <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Users/lbp/Desktop/Test"</span><span class="o">)</span>
+              DW_AT_APPLE_major_runtime_vers <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x02<span class="o">)</span>
+              DW_AT_GNU_dwo_id <span class="o">[</span>DW_FORM_data8]	<span class="o">(</span>0x392b5344d415340c<span class="o">)</span>
+
+0x00000027:   DW_TAG_module
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"_Builtin_stddef_max_align_t"</span><span class="o">)</span>
+                DW_AT_LLVM_config_macros <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"</span><span class="se">\"</span><span class="s2">-DDEBUG=1</span><span class="se">\"</span><span class="s2"> </span><span class="se">\"</span><span class="s2">-DOBJC_OLD_DISPATCH_PROTOTYPES=1</span><span class="se">\"</span><span class="s2">"</span><span class="o">)</span>
+                DW_AT_LLVM_include_path <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"</span><span class="o">)</span>
+                DW_AT_LLVM_isysroot <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk"</span><span class="o">)</span>
+
+0x00000038:     DW_TAG_typedef
+                  DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x0000004b <span class="s2">"long double"</span><span class="o">)</span>
+                  DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"max_align_t"</span><span class="o">)</span>
+                  DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include/__stddef_max_align_t.h"</span><span class="o">)</span>
+                  DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>16<span class="o">)</span>
+
+0x00000043:     DW_TAG_imported_declaration
+                  DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include/__stddef_max_align_t.h"</span><span class="o">)</span>
+                  DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>27<span class="o">)</span>
+                  DW_AT_import <span class="o">[</span>DW_FORM_ref_addr]	<span class="o">(</span>0x0000000000000027<span class="o">)</span>
+
+0x0000004a:     NULL
+
+0x0000004b:   DW_TAG_base_type
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"long double"</span><span class="o">)</span>
+                DW_AT_encoding <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>DW_ATE_float<span class="o">)</span>
+                DW_AT_byte_size <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x08<span class="o">)</span>
+
+0x00000052:   NULL
+0x00000053: Compile Unit: length <span class="o">=</span> 0x000183dc version <span class="o">=</span> 0x0004 abbr_offset <span class="o">=</span> 0x0000 addr_size <span class="o">=</span> 0x08 <span class="o">(</span>next unit at 0x00018433<span class="o">)</span>
+
+0x0000005e: DW_TAG_compile_unit
+              DW_AT_producer <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"Apple clang version 11.0.3 (clang-1103.0.32.62)"</span><span class="o">)</span>
+              DW_AT_language <span class="o">[</span>DW_FORM_data2]	<span class="o">(</span>DW_LANG_ObjC<span class="o">)</span>
+              DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"Darwin"</span><span class="o">)</span>
+              DW_AT_stmt_list <span class="o">[</span>DW_FORM_sec_offset]	<span class="o">(</span>0x000000a7<span class="o">)</span>
+              DW_AT_comp_dir <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Users/lbp/Desktop/Test"</span><span class="o">)</span>
+              DW_AT_APPLE_major_runtime_vers <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x02<span class="o">)</span>
+              DW_AT_GNU_dwo_id <span class="o">[</span>DW_FORM_data8]	<span class="o">(</span>0xa4a1d339379e18a5<span class="o">)</span>
+
+0x0000007a:   DW_TAG_module
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"Darwin"</span><span class="o">)</span>
+                DW_AT_LLVM_config_macros <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"</span><span class="se">\"</span><span class="s2">-DDEBUG=1</span><span class="se">\"</span><span class="s2"> </span><span class="se">\"</span><span class="s2">-DOBJC_OLD_DISPATCH_PROTOTYPES=1</span><span class="se">\"</span><span class="s2">"</span><span class="o">)</span>
+                DW_AT_LLVM_include_path <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include"</span><span class="o">)</span>
+                DW_AT_LLVM_isysroot <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk"</span><span class="o">)</span>
+
+0x0000008b:     DW_TAG_module
+                  DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"C"</span><span class="o">)</span>
+                  DW_AT_LLVM_config_macros <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"</span><span class="se">\"</span><span class="s2">-DDEBUG=1</span><span class="se">\"</span><span class="s2"> </span><span class="se">\"</span><span class="s2">-DOBJC_OLD_DISPATCH_PROTOTYPES=1</span><span class="se">\"</span><span class="s2">"</span><span class="o">)</span>
+                  DW_AT_LLVM_include_path <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include"</span><span class="o">)</span>
+                  DW_AT_LLVM_isysroot <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk"</span><span class="o">)</span>
+
+0x0000009c:       DW_TAG_module
+                    DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"fenv"</span><span class="o">)</span>
+                    DW_AT_LLVM_config_macros <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"</span><span class="se">\"</span><span class="s2">-DDEBUG=1</span><span class="se">\"</span><span class="s2"> </span><span class="se">\"</span><span class="s2">-DOBJC_OLD_DISPATCH_PROTOTYPES=1</span><span class="se">\"</span><span class="s2">"</span><span class="o">)</span>
+                    DW_AT_LLVM_include_path <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include"</span><span class="o">)</span>
+                    DW_AT_LLVM_isysroot <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk"</span><span class="o">)</span>
+
+0x000000ad:         DW_TAG_enumeration_type
+                      DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x00017276 <span class="s2">"unsigned int"</span><span class="o">)</span>
+                      DW_AT_byte_size <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x04<span class="o">)</span>
+                      DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/fenv.h"</span><span class="o">)</span>
+                      DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>154<span class="o">)</span>
+
+0x000000b5:           DW_TAG_enumerator
+                        DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"__fpcr_trap_invalid"</span><span class="o">)</span>
+                        DW_AT_const_value <span class="o">[</span>DW_FORM_udata]	<span class="o">(</span>256<span class="o">)</span>
+
+0x000000bc:           DW_TAG_enumerator
+                        DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"__fpcr_trap_divbyzero"</span><span class="o">)</span>
+                        DW_AT_const_value <span class="o">[</span>DW_FORM_udata]	<span class="o">(</span>512<span class="o">)</span>
+
+0x000000c3:           DW_TAG_enumerator
+                        DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"__fpcr_trap_overflow"</span><span class="o">)</span>
+                        DW_AT_const_value <span class="o">[</span>DW_FORM_udata]	<span class="o">(</span>1024<span class="o">)</span>
+
+0x000000ca:           DW_TAG_enumerator
+                        DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"__fpcr_trap_underflow"</span><span class="o">)</span>
+// ......
+0x000466ee:   DW_TAG_subprogram
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"CFBridgingRetain"</span><span class="o">)</span>
+                DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSObject.h"</span><span class="o">)</span>
+                DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>105<span class="o">)</span>
+                DW_AT_prototyped <span class="o">[</span>DW_FORM_flag_present]	<span class="o">(</span><span class="nb">true</span><span class="o">)</span>
+                DW_AT_type <span class="o">[</span>DW_FORM_ref_addr]	<span class="o">(</span>0x0000000000019155 <span class="s2">"CFTypeRef"</span><span class="o">)</span>
+                DW_AT_inline <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>DW_INL_inlined<span class="o">)</span>
+
+0x000466fa:     DW_TAG_formal_parameter
+                  DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"X"</span><span class="o">)</span>
+                  DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSObject.h"</span><span class="o">)</span>
+                  DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>105<span class="o">)</span>
+                  DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x00046706 <span class="s2">"id"</span><span class="o">)</span>
+
+0x00046705:     NULL
+
+0x00046706:   DW_TAG_typedef
+                DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x00046711 <span class="s2">"objc_object*"</span><span class="o">)</span>
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"id"</span><span class="o">)</span>
+                DW_AT_decl_file <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span><span class="s2">"/Users/lbp/Desktop/Test/Test/NetworkAPM/NSURLResponse+cm_FetchStatusLineFromCFNetwork.m"</span><span class="o">)</span>
+                DW_AT_decl_line <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>44<span class="o">)</span>
+
+0x00046711:   DW_TAG_pointer_type
+                DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x00046716 <span class="s2">"objc_object"</span><span class="o">)</span>
+
+0x00046716:   DW_TAG_structure_type
+                DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"objc_object"</span><span class="o">)</span>
+                DW_AT_byte_size <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x00<span class="o">)</span>
+
+0x0004671c:     DW_TAG_member
+                  DW_AT_name <span class="o">[</span>DW_FORM_strp]	<span class="o">(</span><span class="s2">"isa"</span><span class="o">)</span>
+                  DW_AT_type <span class="o">[</span>DW_FORM_ref4]	<span class="o">(</span>0x00046727 <span class="s2">"objc_class*"</span><span class="o">)</span>
+                  DW_AT_data_member_location <span class="o">[</span>DW_FORM_data1]	<span class="o">(</span>0x00<span class="o">)</span>
+// ......
+</code></pre></div></div>
+
+<p>这里就不粘贴全部内容了（太长了）。可以看到 DIE 包含了函数开始地址、结束地址、函数名、文件名、所在行数，对于给定的地址，找到函数开始地址、结束地址之间包含该抵制的 DIE，则可以还原函数名和文件名信息。</p>
+
+<p>debug_line  可以还原文件行数等信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dwarfdump <span class="nt">-F</span> <span class="nt">--debug-line</span> Test.app.dSYM/Contents/Resources/DWARF/Test <span class="o">&gt;</span> debug-inline.txt
+</code></pre></div></div>
+
+<p>贴部分信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test.app.dSYM/Contents/Resources/DWARF/Test:	file format Mach-O arm64
+
+.debug_line contents:
+debug_line[0x00000000]
+Line table prologue:
+    total_length: 0x000000a3
+         version: 4
+ prologue_length: 0x0000009a
+ min_inst_length: 1
+max_ops_per_inst: 1
+ default_is_stmt: 1
+       line_base: <span class="nt">-5</span>
+      line_range: 14
+     opcode_base: 13
+standard_opcode_lengths[DW_LNS_copy] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_advance_line] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_file] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_column] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_negate_stmt] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_basic_block] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_const_add_pc] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_fixed_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_prologue_end] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_epilogue_begin] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_isa] <span class="o">=</span> 1
+include_directories[  1] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"</span>
+file_names[  1]:
+           name: <span class="s2">"__stddef_max_align_t.h"</span>
+      dir_index: 1
+       mod_time: 0x00000000
+         length: 0x00000000
+
+Address            Line   Column File   ISA Discriminator Flags
+<span class="nt">------------------</span> <span class="nt">------</span> <span class="nt">------</span> <span class="nt">------</span> <span class="nt">---</span> <span class="nt">-------------</span> <span class="nt">-------------</span>
+0x0000000000000000      1      0      1   0             0  is_stmt end_sequence
+debug_line[0x000000a7]
+Line table prologue:
+    total_length: 0x0000230a
+         version: 4
+ prologue_length: 0x00002301
+ min_inst_length: 1
+max_ops_per_inst: 1
+ default_is_stmt: 1
+       line_base: <span class="nt">-5</span>
+      line_range: 14
+     opcode_base: 13
+standard_opcode_lengths[DW_LNS_copy] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_advance_line] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_file] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_column] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_negate_stmt] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_basic_block] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_const_add_pc] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_fixed_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_prologue_end] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_epilogue_begin] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_isa] <span class="o">=</span> 1
+include_directories[  1] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include"</span>
+include_directories[  2] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/11.0.3/include"</span>
+include_directories[  3] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/sys"</span>
+include_directories[  4] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/mach"</span>
+include_directories[  5] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/libkern"</span>
+include_directories[  6] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/architecture"</span>
+include_directories[  7] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/sys/_types"</span>
+include_directories[  8] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/_types"</span>
+include_directories[  9] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/arm"</span>
+include_directories[ 10] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/sys/_pthread"</span>
+include_directories[ 11] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/mach/arm"</span>
+include_directories[ 12] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/libkern/arm"</span>
+include_directories[ 13] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/uuid"</span>
+include_directories[ 14] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/netinet"</span>
+include_directories[ 15] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/netinet6"</span>
+include_directories[ 16] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/net"</span>
+include_directories[ 17] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/pthread"</span>
+include_directories[ 18] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/mach_debug"</span>
+include_directories[ 19] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/os"</span>
+include_directories[ 20] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/malloc"</span>
+include_directories[ 21] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/bsm"</span>
+include_directories[ 22] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/machine"</span>
+include_directories[ 23] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/mach/machine"</span>
+include_directories[ 24] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/secure"</span>
+include_directories[ 25] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/xlocale"</span>
+include_directories[ 26] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/arpa"</span>
+file_names[  1]:
+           name: <span class="s2">"fenv.h"</span>
+      dir_index: 1
+       mod_time: 0x00000000
+         length: 0x00000000
+file_names[  2]:
+           name: <span class="s2">"stdatomic.h"</span>
+      dir_index: 2
+       mod_time: 0x00000000
+         length: 0x00000000
+file_names[  3]:
+           name: <span class="s2">"wait.h"</span>
+      dir_index: 3
+       mod_time: 0x00000000
+         length: 0x00000000
+// ......
+Address            Line   Column File   ISA Discriminator Flags
+<span class="nt">------------------</span> <span class="nt">------</span> <span class="nt">------</span> <span class="nt">------</span> <span class="nt">---</span> <span class="nt">-------------</span> <span class="nt">-------------</span>
+0x000000010000b588     14      0      2   0             0  is_stmt
+0x000000010000b5b4     16      5      2   0             0  is_stmt prologue_end
+0x000000010000b5d0     17     11      2   0             0  is_stmt
+0x000000010000b5d4      0      0      2   0             0 
+0x000000010000b5d8     17      5      2   0             0 
+0x000000010000b5dc     17     11      2   0             0 
+0x000000010000b5e8     18      1      2   0             0  is_stmt
+0x000000010000b608     20      0      2   0             0  is_stmt
+0x000000010000b61c     22      5      2   0             0  is_stmt prologue_end
+0x000000010000b628     23      5      2   0             0  is_stmt
+0x000000010000b644     24      1      2   0             0  is_stmt
+0x000000010000b650     15      0      1   0             0  is_stmt
+0x000000010000b65c     15     41      1   0             0  is_stmt prologue_end
+0x000000010000b66c     11      0      2   0             0  is_stmt
+0x000000010000b680     11     17      2   0             0  is_stmt prologue_end
+0x000000010000b6a4     11     17      2   0             0  is_stmt end_sequence
+debug_line[0x0000def9]
+Line table prologue:
+    total_length: 0x0000015a
+         version: 4
+ prologue_length: 0x000000eb
+ min_inst_length: 1
+max_ops_per_inst: 1
+ default_is_stmt: 1
+       line_base: <span class="nt">-5</span>
+      line_range: 14
+     opcode_base: 13
+standard_opcode_lengths[DW_LNS_copy] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_advance_line] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_file] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_column] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_negate_stmt] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_basic_block] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_const_add_pc] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_fixed_advance_pc] <span class="o">=</span> 1
+standard_opcode_lengths[DW_LNS_set_prologue_end] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_epilogue_begin] <span class="o">=</span> 0
+standard_opcode_lengths[DW_LNS_set_isa] <span class="o">=</span> 1
+include_directories[  1] <span class="o">=</span> <span class="s2">"Test"</span>
+include_directories[  2] <span class="o">=</span> <span class="s2">"Test/NetworkAPM"</span>
+include_directories[  3] <span class="o">=</span> <span class="s2">"/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.5.sdk/usr/include/objc"</span>
+file_names[  1]:
+           name: <span class="s2">"AppDelegate.h"</span>
+      dir_index: 1
+       mod_time: 0x00000000
+         length: 0x00000000
+file_names[  2]:
+           name: <span class="s2">"JMWebResourceURLProtocol.h"</span>
+      dir_index: 2
+       mod_time: 0x00000000
+         length: 0x00000000
+file_names[  3]:
+           name: <span class="s2">"AppDelegate.m"</span>
+      dir_index: 1
+       mod_time: 0x00000000
+         length: 0x00000000
+file_names[  4]:
+           name: <span class="s2">"objc.h"</span>
+      dir_index: 3
+       mod_time: 0x00000000
+         length: 0x00000000
+// ......
+</code></pre></div></div>
+
+<p>可以看到 debug_line 里包含了每个代码地址对应的行数。上面贴了 AppDelegate 的部分。</p>
+
+<h4 id="43-symbols">4.3 symbols</h4>
+
+<blockquote>
+  <p>在链接中，我们将函数和变量统称为符合（Symbol），函数名或变量名就是符号名（Symbol Name），我们可以将符号看成是链接中的粘合剂，整个链接过程正是基于符号才能正确完成的。</p>
+</blockquote>
+
+<p>上述文字来自《程序员的自我修养》。所以符号就是函数、变量、类的统称。</p>
+
+<p>按照类型划分，符号可以分为三类：</p>
+
+<ul>
+  <li>全局符号：目标文件外可见的符号，可以被其他目标文件所引用，或者需要其他目标文件定义</li>
+  <li>局部符号：只在目标文件内可见的符号，指只在目标文件内可见的函数和变量</li>
+  <li>调试符号：包括行号信息的调试符号信息，行号信息记录了函数和变量对应的文件和文件行号。</li>
+</ul>
+
+<p><strong>符号表（Symbol Table）</strong>：是内存地址与函数名、文件名、行号的映射表。每个定义的符号都有一个对应的值得，叫做符号值（Symbol Value），对于变量和函数来说，符号值就是地址，符号表组成如下</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;起始地址&gt; &lt;结束地址&gt; &lt;函数&gt; <span class="o">[</span>&lt;文件名：行号&gt;]
+</code></pre></div></div>
+
+<h4 id="44-如何获取地址">4.4 <strong>如何获取地址？</strong></h4>
+
+<p>image 加载的时候会进行相对基地址进行重定位，并且每次加载的基地址都不一样，函数栈 frame 的地址是重定位后的绝对地址，我们要的是重定位前的相对地址。</p>
+
+<p>Binary Images</p>
+
+<p>拿测试工程的 crash 日志举例子，打开贴部分 Binary Images 内容</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// ...
+Binary Images:
+0x102fe0000 - 0x102ff3fff Test arm64  &lt;37eaa57df2523d95969e47a9a1d69ce5&gt; /var/containers/Bundle/Application/643F0DFE-A710-4136-A278-A89D780B7208/Test.app/Test
+0x1030e0000 - 0x1030ebfff libobjc-trampolines.dylib arm64  &lt;181f3aa866d93165ac54344385ac6e1d&gt; /usr/lib/libobjc-trampolines.dylib
+0x103204000 - 0x103267fff dyld arm64  &lt;6f1c86b640a3352a8529bca213946dd5&gt; /usr/lib/dyld
+0x189a78000 - 0x189a8efff libsystem_trace.dylib arm64  &lt;b7477df8f6ab3b2b9275ad23c6cc0b75&gt; /usr/lib/system/libsystem_trace.dylib
+// ...
+</code></pre></div></div>
+
+<p>可以看到 Crash 日志的 Binary Images 包含每个 Image 的加载开始地址、结束地址、image 名称、arm 架构、uuid、image 路径。</p>
+
+<p>crash 日志中的信息</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Last Exception Backtrace:
+// ...
+5   Test                          	0x102fe592c -[ViewController testMonitorCrash] + 22828 <span class="o">(</span>ViewController.mm:58<span class="o">)</span>
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Binary Images:
+0x102fe0000 - 0x102ff3fff Test arm64  &lt;37eaa57df2523d95969e47a9a1d69ce5&gt; /var/containers/Bundle/Application/643F0DFE-A710-4136-A278-A89D780B7208/Test.app/Test
+</code></pre></div></div>
+
+<p>所以 frame 5 的相对地址为 <code class="highlighter-rouge">0x102fe592c - 0x102fe0000  </code>。再使用 命令可以还原符号信息。</p>
+
+<p>使用 atos 来解析，<code class="highlighter-rouge">0x102fe0000</code> 为 image 加载的开始地址，<code class="highlighter-rouge">0x102fe592c</code> 为 frame 需要还原的地址。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>atos <span class="nt">-o</span> Test.app.dSYM/Contents/Resources/DWARF/Test-arch arm64 <span class="nt">-l</span> 0x102fe0000 0x102fe592c
+</code></pre></div></div>
+
+<h4 id="45-uuid">4.5 UUID</h4>
+
+<ul>
+  <li>
+    <p>crash 文件的 UUID</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">grep</span> <span class="nt">--after-context</span><span class="o">=</span>2 <span class="s2">"Binary Images:"</span> <span class="k">*</span>.crash
+</code></pre></div>    </div>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Test  5-28-20, 7-47 PM.crash:Binary Images:
+Test  5-28-20, 7-47 PM.crash-0x102fe0000 - 0x102ff3fff Test arm64  &lt;37eaa57df2523d95969e47a9a1d69ce5&gt; /var/containers/Bundle/Application/643F0DFE-A710-4136-A278-A89D780B7208/Test.app/Test
+Test  5-28-20, 7-47 PM.crash-0x1030e0000 - 0x1030ebfff libobjc-trampolines.dylib arm64  &lt;181f3aa866d93165ac54344385ac6e1d&gt; /usr/lib/libobjc-trampolines.dylib
+<span class="nt">--</span>
+Test.crash:Binary Images:
+Test.crash-0x102fe0000 - 0x102ff3fff Test arm64  &lt;37eaa57df2523d95969e47a9a1d69ce5&gt; /var/containers/Bundle/Application/643F0DFE-A710-4136-A278-A89D780B7208/Test.app/Test
+Test.crash-0x1030e0000 - 0x1030ebfff libobjc-trampolines.dylib arm64  &lt;181f3aa866d93165ac54344385ac6e1d&gt; /usr/lib/libobjc-trampolines.dylib
+</code></pre></div>    </div>
+
+    <p>Test App 的 UUID 为 <code class="highlighter-rouge">37eaa57df2523d95969e47a9a1d69ce5</code>.</p>
+  </li>
+  <li>
+    <p>.dSYM 文件的  UUID</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dwarfdump <span class="nt">--uuid</span> Test.app.dSYM
+</code></pre></div>    </div>
+
+    <p>结果为</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UUID: 37EAA57D-F252-3D95-969E-47A9A1D69CE5 <span class="o">(</span>arm64<span class="o">)</span> Test.app.dSYM/Contents/Resources/DWARF/Test
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>app 的 UUID</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dwarfdump <span class="nt">--uuid</span> Test.app/Test
+</code></pre></div>    </div>
+
+    <p>结果为</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UUID: 37EAA57D-F252-3D95-969E-47A9A1D69CE5 <span class="o">(</span>arm64<span class="o">)</span> Test.app/Test
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h4 id="46-符号化解析-crash-日志">4.6 符号化（解析 Crash 日志）</h4>
+
+<p>上述篇幅分析了如何捕获各种类型的 crash，App 在用户手中我们通过技术手段可以获取 crash 案发现场信息并结合一定的机制去上报，但是这种堆栈是十六进制的地址，无法定位问题，所以需要做符号化处理。</p>
+
+<p>上面也说明了<a href="#dSYM">.dSYM 文件</a> 的作用，<strong>通过符号地址结合 dSYM 文件来还原文件名、所在行、函数名，这个过程叫符号化</strong>。但是 .dSYM 文件必须和 crash log 文件的 bundle id、version 严格对应。</p>
+
+<p>获取 Crash 日志可以通过 Xcode -&gt; Window -&gt; Devices and Simulators 选择对应设备，找到 Crash 日志文件，根据时间和 App 名称定位。</p>
+
+<p>app 和 .dSYM 文件可以通过打包的产物得到，路径为 <code class="highlighter-rouge">~/Library/Developer/Xcode/Archives</code>。</p>
+
+<p>解析方法一般有2种：</p>
+
+<ul>
+  <li>
+    <p>使用 <strong>symbolicatecrash</strong></p>
+
+    <p>symbolicatecrash 是 Xcode 自带的 crash 日志分析工具，先确定所在路径，在终端执行下面的命令</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>find /Applications/Xcode.app <span class="nt">-name</span> symbolicatecrash <span class="nt">-type</span> f
+</code></pre></div>    </div>
+
+    <p>会返回几个路径，找到 <code class="highlighter-rouge">iPhoneSimulator.platform</code> 所在那一行</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/Library/PrivateFrameworks/DVTFoundation.framework/symbolicatecrash
+</code></pre></div>    </div>
+
+    <p>将 symbolicatecrash 拷贝到指定文件夹下（保存了 app、dSYM、crash 文件的文件夹）</p>
+
+    <p>执行命令</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./symbolicatecrash Test.crash Test.dSYM <span class="o">&gt;</span> Test.crash
+</code></pre></div>    </div>
+
+    <p>第一次做这事儿应该会报错 <code class="highlighter-rouge">Error: "DEVELOPER_DIR" is not defined at ./symbolicatecrash line 69.</code>，解决方案：在终端执行下面命令</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">DEVELOPER_DIR</span><span class="o">=</span>/Applications/Xcode.app/Contents/Developer
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用 atos</p>
+
+    <p>区别于 symbolicatecrash，atos 较为灵活，只要 <code class="highlighter-rouge">.crash</code> 和 <code class="highlighter-rouge">.dSYM</code> 或者 <code class="highlighter-rouge">.crash</code> 和 <code class="highlighter-rouge">.app</code> 文件对应即可。</p>
+
+    <p>用法如下，-l 最后跟得是符号地址</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xcrun atos <span class="nt">-o</span> Test.app.dSYM/Contents/Resources/DWARF/Test <span class="nt">-arch</span> armv7 <span class="nt">-l</span> 0x1023c592c
+</code></pre></div>    </div>
+
+    <p>也可以解析 .app 文件（不存在 .dSYM 文件），其中xxx为段地址，xx为偏移地址</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>atos <span class="nt">-arch</span> architecture <span class="nt">-o</span> binary <span class="nt">-l</span> xxx xx
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>因为我们的 App 可能有很多，每个 App 在用户手中可能是不同的版本，所以在 APM 拦截之后需要符号化的时候需要将 crash 文件和 <code class="highlighter-rouge">.dSYM</code> 文件一一对应，才能正确符号化，对应的原则就是 <strong>UUID</strong> 一致。</p>
+
+<h4 id="47-系统库符号化解析">4.7 系统库符号化解析</h4>
+
+<p>我们每次真机连接 Xcode 运行程序，会提示等待，其实系统为了堆栈解析，都会把当前版本的系统符号库自动导入到 <code class="highlighter-rouge">/Users/你自己的用户名/Library/Developer/Xcode/iOS DeviceSupport</code> 目录下安装了一大堆系统库的符号化文件。你可以访问下面目录看看</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/Users/你自己的用户名/Library/Developer/Xcode/iOS DeviceSupport/
+</code></pre></div></div>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095631269.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h3 id="5--服务端处理">5.  服务端处理</h3>
+
+<h5 id="51-elk-日志系统">5.1 ELK 日志系统</h5>
+
+<p>业界设计日志监控系统一般会采用基于 ELK 技术。ELK 是 Elasticsearch、Logstash、Kibana 三个开源框架缩写。Elasticsearch 是一个分布式、通过 Restful 方式进行交互的近实时搜索的平台框架。Logstash 是一个中央数据流引擎，用于从不同目标（文件/数据存储/MQ）收集不同格式的数据，经过过滤后支持输出到不同目的地（文件/MQ/Redis/ElasticsSearch/Kafka）。Kibana 可以将 Elasticserarch 的数据通过友好的页面展示出来，提供可视化分析功能。所以 ELK 可以搭建一个高效、企业级的日志分析系统。</p>
+
+<p>早期单体应用时代，几乎应用的所有功能都在一台机器上运行，出了问题，运维人员打开终端输入命令直接查看系统日志，进而定位问题、解决问题。随着系统的功能越来越复杂，用户体量越来越大，单体应用几乎很难满足需求，所以技术架构迭代了，通过水平拓展来支持庞大的用户量，将单体应用进行拆分为多个应用，每个应用采用集群方式部署，负载均衡控制调度，假如某个子模块发生问题，去找这台服务器上终端找日志分析吗？显然台落后，所以日志管理平台便应运而生。通过 Logstash 去收集分析每台服务器的日志文件，然后按照定义的正则模版过滤后传输到 Kafka 或 Redis，然后由另一个 Logstash 从 Kafka 或 Redis 上读取日志存储到 ES 中创建索引，最后通过 Kibana 进行可视化分析。此外可以将收集到的数据进行数据分析，做更进一步的维护和决策。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095659875.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>上图展示了一个  ELK 的日志架构图。简单说明下：</p>
+
+<ul>
+  <li>Logstash 和 ES 之前存在一个 Kafka 层，因为 Logstash 是架设在数据资源服务器上，将收集到的数据进行实时过滤，过滤需要消耗时间和内存，所以存在 Kafka，起到了数据缓冲存储作用，因为 Kafka 具备非常出色的读写性能。</li>
+  <li>再一步就是 Logstash 从 Kafka 里面进行读取数据，将数据过滤、处理，将结果传输到 ES</li>
+  <li>这个设计不但性能好、耦合低，还具备可拓展性。比如可以从 n 个不同的 Logstash 上读取传输到 n 个 Kafka 上，再由 n 个 Logstash 过滤处理。日志来源可以是 m 个，比如 App 日志、Tomcat 日志、Nginx 日志等等</li>
+</ul>
+
+<p>下图贴一个 Elasticsearch 社区分享的一个 “Elastic APM 动手实战”<a href="https://elasticsearch.cn/slides/257#page=3">主题</a>的内容截图。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095726392.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h5 id="52-服务侧">5.2 服务侧</h5>
+
+<p>Crash log 统一入库 Kibana 时是没有符号化的，所以需要符号化处理，以方便定位问题、crash 产生报表和后续处理。</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095751657.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>所以整个流程就是：客户端 APM SDK  收集 crash log -&gt; Kafka 存储 -&gt; Mac 机执行定时任务符号化  -&gt; 数据回传 Kafka -&gt; 产品侧（显示端）对数据进行分类、报表、报警等操作。</p>
+
+<p>因为公司的产品线有多条，相应的 App 有多个，用户使用的 App 版本也各不相同，所以 crash 日志分析必须要有正确的 .dSYM 文件，那么多 App 的不同版本，自动化就变得非常重要了。</p>
+
+<p>自动化有2种手段，规模小一点的公司或者图省事，可以在 Xcode中 添加 runScript 脚本代码来自动在 release 模式下上传dSYM）。</p>
+
+<p>因为我们公司有自己的一套体系，wax-cli，可以同时管理 iOS SDK、iOS App、Android SDK、Android App、Node、React、React Native 工程项目的初始化、依赖管理、构建（持续集成、Unit Test、Lint、统跳检测）、测试、打包、部署、动态能力（热更新、统跳路由下发）等能力于一身。可以基于各个阶段做能力的插入，所以可以在调用打包后在打包机上传 .dSYM 文件到七牛云存储（规则可以是以 AppName + Version 为 key，value 为 .dSYM 文件）。</p>
+
+<p>现在很多架构设计都是微服务，至于为什么选微服务，不在本文范畴。所以 crash 日志的符号化被设计为一个微服务。架构图如下:</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095818654.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>说明：</p>
+
+<ul>
+  <li>
+    <p>Symbolication Service 作为整个监控系统 Prism 的一个组成部分，是专注于 crash report 符号化的微服务。</p>
+  </li>
+  <li>接收来自 mass 的包含预处理过的 crash report 和 dsym index 的请求，从七牛拉取对应的 dsym，对 crash report 做符号化解析，计算 hash，并将 hash 响应给 mass。</li>
+  <li>接收来自 Prism 管理系统的包含原始 crash report 和 dsym index 的请求，从七牛拉取对应的 dsym，对crash report 做符号化解析，并将符号化的 crash report 响应给 Prism 管理系统。</li>
+  <li>Mass 是一个通用的数据处理(流式/批式)和任务调度框架</li>
+  <li>candle 是一个打包系统，上面说的 wax-cli 有个能力就是打包，其实就是调用的 candle 系统的打包构建能力。会根据项目的特点，选择合适的打包机（打包平台是维护了多个打包任务，不同任务根据特点被派发到不同的打包机上，任务详情页可以看到依赖的下载、编译、运行过程等，打包好的产物包括二进制包、下载二维码等等）</li>
+</ul>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095844874.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>其中符号化服务是大前端背景下大前端团队的产物，所以是 NodeJS 实现的。iOS 的符号化机器是 双核的 Mac mini，这就需要做实验测评到底需要开启几个 worker 进程做符号化服务。结果是双进程处理 crash log，比单进程效率高近一倍，而四进程比双进程效率提升不明显，符合双核 mac mini 的特点。所以开启两个 worker 进程做符号化处理。</p>
+
+<p>下图是完整设计图:</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095906225.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>简单说明下，符号化流程是一个主从模式，一台 master 机，多个 slave 机，master 机读取 .dSYM 和 crash 结果的 cache。mass 调度符号化服务（内部2个 symbolocate worker）同时从七牛云上获取 .dSYM 文件。</p>
+
+<p>系统架构图如下:</p>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095925264.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<h2 id="八-apm-小结">八、 APM 小结</h2>
+
+<ol>
+  <li>
+    <p>通常来说各个端的监控能力是不太一致的，技术实现细节也不统一。所以在技术方案评审的时候需要将监控能力对齐统一。每个能力在各个端的数据字段必须对齐（字段个数、名称、数据类型和精度），因为 APM 本身是一个闭环，监控了之后需符号化解析、数据整理，进行产品化开发、最后需要监控大盘展示等</p>
+  </li>
+  <li>
+    <p>一些 crash 或者 ANR 等根据等级需要邮件、短信、企业内容通信工具告知干系人，之后快速发布版本、hot fix 等。</p>
+  </li>
+  <li>
+    <p>监控的各个能力需要做成可配置，灵活开启关闭。</p>
+  </li>
+  <li>
+    <p>监控数据需要做内存到文件的写入处理，需要注意策略。监控数据需要存储数据库，数据库大小、设计规则等。存入数据库后如何上报，上报机制等会在另一篇文章讲：<a href="https://github.com/FantasticLBP/knowledge-kit/blob/master/Chapter1%20-%20iOS/1.80.md">打造一个通用、可配置的数据上报 SDK</a></p>
+  </li>
+  <li>
+    <p>尽量在技术评审后，将各端的技术实现写进文档中，同步给相关人员。比如 ANR 的实现</p>
+
+    <pre><code class="language-objectivec">/*
+android 端
+   
+根据设备分级，一般超过 300ms 视为一次卡顿
+hook 系统 loop，在消息处理前后插桩，用以计算每条消息的时长
+开启另外线程 dump 堆栈，处理结束后关闭
+*/
+new ExceptionProcessor().init(this, new Runnable() {
+            @Override
+            public void run() {
+                //监测卡顿
+                try {
+                    ProxyPrinter proxyPrinter = new ProxyPrinter(PerformanceMonitor.this);
+                    Looper.getMainLooper().setMessageLogging(proxyPrinter);
+                    mWeakPrinter = new WeakReference&lt;ProxyPrinter&gt;(proxyPrinter);
+                } catch (FileNotFoundException e) {
+                }
+            }
+        })
+           
+/*
+iOS 端
+   
+子线程通过 ping 主线程来确认主线程当前是否卡顿。
+卡顿阈值设置为 300ms，超过阈值时认为卡顿。
+卡顿时获取主线程的堆栈，并存储上传。
+*/ 
+- (void) main() {
+    while (self.cancle == NO) {
+        self.isMainThreadBlocked = YES;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.isMainThreadBlocked = YES;
+            [self.semaphore singal];
+        });
+        [Thread sleep:300];
+        if (self.isMainThreadBlocked) {
+            [self handleMainThreadBlock];
+        }
+        [self.semaphore wait];
+    }
+}
+</code></pre>
+  </li>
+  <li>
+    <p>整个 APM 的架构图如下</p>
+  </li>
+</ol>
+
+<p><img src="https://img-blog.csdnimg.cn/20200714095956693.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTI0Mzk0NDY=,size_16,color_FFFFFF,t_70#pic_center" alt="在这里插入图片描述" /></p>
+
+<p>说明：</p>
+
+<ul>
+  <li>埋点 SDK，通过 sessionId 来关联日志数据</li>
+  <li>wax 上面介绍过了，是一种多端项目管理模式，每个 wax 项目都具有基础信息</li>
+</ul>
+
+<ol>
+  <li>APM 技术方案本身是随着技术手段、分析需求不断调整升级的。上图的几个结构示意图是早期几个版本的，目前使用的是在此基础上进行了升级和结构调整，提几个关键词：Hermes、Flink SQL、InfluxDB。</li>
+</ol>
+
+<h2 id="参考资料">参考资料</h2>
+
+<ul>
+  <li><a href="https://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/">iOS 保持界面流畅的技巧</a></li>
+  <li><a href="https://en.wikipedia.org/wiki/Call_stack">Call Stack</a></li>
+  <li><a href="https://blog.csdn.net/VarusK/article/details/83031643">关于函数调用栈(call stack)的个人理解</a></li>
+  <li><a href="https://bestswifter.com/callstack/">获取任意线程调用栈的那些事</a></li>
+  <li><a href="https://www.zoomfeng.com/blog/launch-time.html">iOS启动时间优化</a></li>
+  <li><a href="https://www.zoomfeng.com/blog/launch-optimize-from-wwdc2019.html">WWDC2019之启动时间与Dyld3</a></li>
+  <li><a href="https://opensource.apple.com/tarballs/libmalloc/">Apple-libmalloc</a></li>
+  <li><a href="https://opensource.apple.com/tarballs/xnu/">Apple-XNU</a></li>
+  <li><a href="https://www.jianshu.com/p/4458700a8ba8">OOM探究：XNU 内存状态管理</a></li>
+  <li><a href="https://engineering.fb.com/ios/reducing-fooms-in-the-facebook-ios-app/">Reducing FOOMs in the Facebook iOS app</a></li>
+  <li><a href="https://satanwoo.github.io/2017/10/18/abort/">iOS内存abort(Jetsam) 原理探究</a></li>
+  <li><a href="https://wetest.qq.com/lab/view/367.html?from=coop_gad">iOS微信内存监控</a></li>
+  <li><a href="https://www.jianshu.com/p/df5b08330afd">iOS堆栈信息解析（函数地址与符号关联）</a></li>
+  <li><a href="https://developer.apple.com/library/archive/documentation/Networking/Conceptual/CFNetwork/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001132-CH1-DontLinkElementID_30">Apple-CFNetwork Programming Guide</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages">MDN-HTTP Messages</a></li>
+  <li><a href="https://junyixie.github.io/2018/09/30/dwarf和符号化/">DWARF 和符号化</a></li>
+</ul>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list post-list__post-title post-title"><a href="/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E4%B8%89/" title="link to 带你打造一套 APM 监控系统（三）">带你打造一套 APM 监控系统（三）</a></h2>
+       <p class="excerpt">五、 App 网络监控移动网络环境一直很复杂，WIFI、2G、3G、4G、5G 等，用户使用 App 的过程中可能在这几种类型之间切换，这也是移动网络和传统网络间的一个区别，被称为「Connection Migration」。此外还存在 DNS 解析缓慢、失败率高、运营商劫持等问题。用户在使用 App 时因为某些原因导致体验很差，要想针对网络情况进行改善，必须有清晰的监控手段。1. App 网络请求过程App 发送一次网络请求一般会经历下面几个关键步骤：      DNS 解析    Do...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2020-07-14 13:00:37 +0800" class="post-list__meta--date date">2020-07-14</time> &#8226; <span class="post-list__meta--tags tags">iOS</span><a class="btn-border-small" href=/2020/07/%E5%B8%A6%E4%BD%A0%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97-APM-%E7%9B%91%E6%8E%A7%E7%B3%BB%E7%BB%9F-%E4%B8%89/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2020-07-14 生成</span>
+        <span class="footer__copyright">本站由 <a href="http://gsnice.com">@GSNICE</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2020</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
