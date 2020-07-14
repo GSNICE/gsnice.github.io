@@ -1,8 +1,9 @@
 ---
+title: iOS：使用 Apple Configurator 获取 ipa 包及资源文件
+tags:
+- iOS
+date: '2020-04-21 13:33:14'
 layout: post
-title: "iOS：使用 Apple Configurator 获取 ipa 包及资源文件"
-category: [iOS]
-tags: [iOS]
 ---
 
 ### 软件下载
