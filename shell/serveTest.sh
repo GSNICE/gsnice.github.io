@@ -1,4 +1,4 @@
 #!/bin/sh
 cd ..
 bundle exec jekyll serve
-rm _site/config.codekit3 _site/build.sh _site/serveTest.sh _site/rakefile.rb
+rm gsnice.github.io/config.codekit3 gsnice.github.io/build.sh gsnice.github.io/serveTest.sh gsnice.github.io/rakefile.rb
