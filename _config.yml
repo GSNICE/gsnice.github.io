@@ -5,7 +5,7 @@ welcome_message: 欢迎访问我的技术空间
 description: 嗨，我是郭承斌 (Gavin.Guo)，一名 iOS 开发者。
 creator: <a href="http://gsnice.com">@GSNICE</a>
 
-url: "https://gsnice.com"
+url: "http://gsnice.com"
 
 permalink: /:year/:month/:title/
 
@@ -21,6 +21,7 @@ blog_button:
 
 nav:
     - {title: CSDN, description: 我的 CSDN 博客, url: '//blog.csdn.net/u012439446'}
+    - {title: 技术栈,description: 简历, url: '/technology-stack'}
     - {title: 简历, description: 简历, url: '/resume'}
     - {title: 关于, description: 关于, url: '/about'}
 
