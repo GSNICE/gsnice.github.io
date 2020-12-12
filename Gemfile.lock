@@ -80,6 +80,7 @@ GEM
 
 PLATFORMS
   ruby
+  universal-darwin-19
 
 DEPENDENCIES
   jekyll
@@ -88,4 +89,4 @@ DEPENDENCIES
   redcarpet
 
 BUNDLED WITH
-   2.1.4
+   2.2.0
